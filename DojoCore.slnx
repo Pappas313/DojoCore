@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="DojoCore.API/DojoCore.API.csproj" />
+  <Project Path="DojoCore.Application/DojoCore.Application.csproj" />
+  <Project Path="DojoCore.Domain/DojoCore.Domain.csproj" />
+  <Project Path="DojoCore.Infrastructure/DojoCore.Infrastructure.csproj" />
+</Solution>
