@@ -29,6 +29,7 @@ The request will be sent as `multipart/form-data`. The JSON payload should be st
     "username": "athlete_john",
     "email": "john@example.com",
     "password": "SecurePassword123!",
+    "user_code": "gfgfgfhfgh",
     "role": 3,
     "address": "123 Athens St",
     "gender": 1,
