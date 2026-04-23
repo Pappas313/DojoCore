@@ -28,6 +28,62 @@ public class AuthController : ControllerBase
         _env = env;
     }
 
+    /// <summary>Authenticates a user using their email/username and password. Returns user info and sets an HttpOnly access token cookie.</summary>
+    [HttpPost("login")]
+    [Consumes("multipart/form-data", "application/json")]
+    [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Login(CancellationToken ct)
+    {
+        LoginRequestDto request;
+
+        if (Request.HasJsonContentType())
+        {
+            request = await Request.ReadFromJsonAsync<LoginRequestDto>(_jsonOptions, ct)
+                ?? new LoginRequestDto();
+        }
+        else
+        {
+            request = new LoginRequestDto
+            {
+                Identifier = Request.Form["identifier"].ToString(),
+                Password   = Request.Form["password"].ToString()
+            };
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Identifier) || string.IsNullOrWhiteSpace(request.Password))
+        {
+            return Unauthorized(new
+            {
+                error   = "InvalidCredentials",
+                message = "Invalid username/email or password."
+            });
+        }
+
+        try
+        {
+            var (response, token) = await _authService.LoginAsync(request, ct);
+
+            Response.Cookies.Append("accessToken", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure   = true,
+                SameSite = SameSiteMode.Strict,
+                Expires  = DateTimeOffset.UtcNow.AddHours(1)
+            });
+
+            return Ok(response);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized(new
+            {
+                error   = "InvalidCredentials",
+                message = "Invalid username/email or password."
+            });
+        }
+    }
+
     /// <summary>Registers a new user. Accepts multipart/form-data with a 'payload' JSON field and optional 'files'.</summary>
     [HttpPost("register")]
     [Consumes("multipart/form-data")]

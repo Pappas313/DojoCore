@@ -11,12 +11,14 @@ public class AuthService : IAuthService
     private readonly IUnitOfWork _uow;
     private readonly IFileStorageService _fileStorage;
     private readonly IGeocodingService _geocoding;
+    private readonly IJwtService _jwt;
 
-    public AuthService(IUnitOfWork uow, IFileStorageService fileStorage, IGeocodingService geocoding)
+    public AuthService(IUnitOfWork uow, IFileStorageService fileStorage, IGeocodingService geocoding, IJwtService jwt)
     {
         _uow = uow;
         _fileStorage = fileStorage;
         _geocoding = geocoding;
+        _jwt = jwt;
     }
 
     public async Task<RegisterResponseDto> RegisterAsync(
@@ -186,6 +188,33 @@ public class AuthService : IAuthService
 
         if (errors.Count > 0)
             throw new ValidationException(errors);
+    }
+
+    public async Task<(LoginResponseDto Response, string Token)> LoginAsync(
+        LoginRequestDto request,
+        CancellationToken ct = default)
+    {
+        var user = await _uow.Users.GetByEmailOrUsernameAsync(request.Identifier, ct);
+
+        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            throw new UnauthorizedAccessException("InvalidCredentials");
+
+        var token = _jwt.GenerateToken(user);
+
+        var response = new LoginResponseDto
+        {
+            User = new LoginUserDto
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                Role = user.Role,
+                Status = user.Status
+            },
+            Message = "Authentication successful."
+        };
+
+        return (response, token);
     }
 
     private static string GenerateUserCode() =>

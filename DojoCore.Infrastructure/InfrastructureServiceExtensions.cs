@@ -1,3 +1,4 @@
+using Dapper;
 using DojoCore.Application.Interfaces;
 using DojoCore.Application.Services;
 using DojoCore.Domain.Interfaces;
@@ -15,6 +16,7 @@ public static class InfrastructureServiceExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
         var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured.");
 
@@ -32,6 +34,7 @@ public static class InfrastructureServiceExtensions
         });
 
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IJwtService, JwtService>();
 
         return services;
     }

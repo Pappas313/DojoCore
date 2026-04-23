@@ -8,4 +8,8 @@ public interface IAuthService
         RegisterRequestDto request,
         IReadOnlyList<(Stream Content, string FileName, string ContentType)> files,
         CancellationToken ct = default);
+
+    Task<(LoginResponseDto Response, string Token)> LoginAsync(
+        LoginRequestDto request,
+        CancellationToken ct = default);
 }

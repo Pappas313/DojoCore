@@ -70,4 +70,30 @@ public class UserRepository : IUserRepository
         var cmd = new CommandDefinition(sql, param, transaction: _transaction(), cancellationToken: ct);
         await _connection.ExecuteAsync(cmd);
     }
+
+    public async Task<User?> GetByEmailOrUsernameAsync(string identifier, CancellationToken ct)
+    {
+        const string sql = """
+            SELECT id             AS "Id",
+                   username       AS "Username",
+                   email          AS "Email",
+                   password_hash  AS "PasswordHash",
+                   user_code      AS "UserCode",
+                   role           AS "Role",
+                   address        AS "Address",
+                   gender         AS "Gender",
+                   date_of_birth  AS "DateOfBirth",
+                   latitude       AS "Latitude",
+                   longitude      AS "Longitude",
+                   status         AS "Status",
+                   created_at     AS "CreatedAt",
+                   updated_at     AS "UpdatedAt"
+            FROM users
+            WHERE email = @Identifier OR username = @Identifier
+            LIMIT 1
+            """;
+
+        var cmd = new CommandDefinition(sql, new { Identifier = identifier }, cancellationToken: ct);
+        return await _connection.QuerySingleOrDefaultAsync<User>(cmd);
+    }
 }
