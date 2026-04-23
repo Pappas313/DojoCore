@@ -84,46 +84,54 @@ public class AuthController : ControllerBase
         }
     }
 
-    /// <summary>Registers a new user. Accepts multipart/form-data with a 'payload' JSON field and optional 'files'.</summary>
+    /// <summary>Registers a new user. Accepts multipart/form-data or application/json.</summary>
     [HttpPost("register")]
-    [Consumes("multipart/form-data")]
+    [Consumes("multipart/form-data", "application/json")]
     [RequestSizeLimit(100 * 1024 * 1024)]           // 100 MB
     [RequestFormLimits(MultipartBodyLengthLimit = 100 * 1024 * 1024)]
     [ProducesResponseType(typeof(RegisterResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Register([FromForm] RegisterFormRequest form, CancellationToken ct)
+    public async Task<IActionResult> Register(CancellationToken ct)
     {
         RegisterRequestDto request;
+        List<(Stream, string, string)> files = [];
 
-        // Support both: stringified JSON in "payload" field (API clients)
-        // OR flat individual fields sent by Swagger UI
-        if (!string.IsNullOrWhiteSpace(form.Payload))
+        if (Request.HasJsonContentType())
         {
-            try
-            {
-                request = JsonSerializer.Deserialize<RegisterRequestDto>(form.Payload, _jsonOptions)
-                    ?? throw new InvalidOperationException();
-            }
-            catch
-            {
-                return BadRequest(new { error = "ValidationError", message = "Invalid JSON in 'payload' field." });
-            }
+            request = await Request.ReadFromJsonAsync<RegisterRequestDto>(_jsonOptions, ct)
+                ?? throw new InvalidOperationException("Empty JSON body.");
         }
         else
         {
-            request = BuildFromFlatForm(Request.Form);
-        }
+            var form = await Request.ReadFormAsync(ct);
+            var payload = form["payload"].ToString();
 
-        IEnumerable<IFormFile> formFiles = form.Files is { Count: > 0 } f ? f : [];
-        var files = formFiles
-            .Select(f => (f.OpenReadStream(), f.FileName, f.ContentType))
-            .ToList()
-            .AsReadOnly();
+            if (!string.IsNullOrWhiteSpace(payload))
+            {
+                try
+                {
+                    request = JsonSerializer.Deserialize<RegisterRequestDto>(payload, _jsonOptions)
+                        ?? throw new InvalidOperationException();
+                }
+                catch
+                {
+                    return BadRequest(new { error = "ValidationError", message = "Invalid JSON in 'payload' field." });
+                }
+            }
+            else
+            {
+                request = BuildFromFlatForm(form);
+            }
+
+            files = form.Files
+                .Select(f => (f.OpenReadStream(), f.FileName, f.ContentType))
+                .ToList();
+        }
 
         try
         {
-            var result = await _authService.RegisterAsync(request, files, ct);
+            var result = await _authService.RegisterAsync(request, files.AsReadOnly(), ct);
             return StatusCode(StatusCodes.Status201Created, result);
         }
         catch (ValidationException ex)
