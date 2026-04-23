@@ -1,6 +1,20 @@
+using DojoCore.API.Swagger;
+using DojoCore.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    // Allow up to 100 MB for multipart/form-data with file uploads
+    options.Limits.MaxRequestBodySize = 100 * 1024 * 1024;
+});
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.OperationFilter<RegisterOperationFilter>();
+});
+
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // Add services to the container.
 
