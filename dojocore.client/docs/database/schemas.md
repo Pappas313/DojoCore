@@ -4,9 +4,11 @@
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    username nvarchar(50) UNIQUE NOT NULL,
-    password_hash nvarchar(30)NOT NULL,
-    email nvarchar(100) UNIQUE,
+    username varchar(50) UNIQUE NOT NULL,
+    password_hash varchar(30)NOT NULL,
+    email varchar(100) UNIQUE,
+
+    user_code varchar(60) UNIQUE NOT NULL,
 
     role SMALLINT NOT NULL,        -- 0 admin, 1 coach, 2 manager, 3 athlete
     status SMALLINT DEFAULT 0,     -- 0 pending, 1 approved, 2 inprogress, 3 rejected
@@ -41,10 +43,10 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS gyms (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    name nvarchar(100) NOT NULL,
-    gym_code nvarchar(20) UNIQUE NOT NULL,
+    name varchar(100) NOT NULL,
+    gym_code varchar(20) UNIQUE NOT NULL,
 
-    address nvarchar(30) NOT NULL,
+    address varchar(30) NOT NULL,
     latitude DOUBLE PRECISION,
     longitude DOUBLE PRECISION,
     location GEOGRAPHY(POINT, 4326),
@@ -92,8 +94,8 @@ CREATE TABLE IF NOT EXISTS documents (
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     gym_id UUID REFERENCES gyms(id) ON DELETE CASCADE,
 
-    file_url nvarchar(60) NOT NULL,
-    type nvarchar(50),
+    file_url varchar(60) NOT NULL,
+    type varchar(50),
 
     status SMALLINT DEFAULT 0,
 

@@ -35,5 +35,8 @@
   "gender_female": "Θήλυ",
   "gender_other": "Άλλο",
   "date_of_birth": "Ημερομηνία Γέννησης",
-  "dob_placeholder": "ηη/μμ/εεεε"
+  "dob_placeholder": "ηη/μμ/εεεε",
+  "athlete_code": "Κωδικός Αθλητή",
+  "coach_code": "Κωδικός Προπονητή",
+  "manager_code": "Κωδικός Παράγοντα"
 }

@@ -36,6 +36,7 @@ const registerSchema = z.object({
   address: z.string().min(1, { message: 'Address is required' }),
   gender: z.number({ invalid_type_error: 'Please select a gender' }),
   dateOfBirth: z.string().min(1, { message: 'Date of birth is required' }),
+  userCode: z.string().optional(),
   role: z.number(),
   gymAction: z.enum(['join', 'create', 'none']),
   gymCode: z.string().optional().nullable(),
@@ -64,6 +65,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, isLoading 
       address: '',
       gender: '' as unknown as number,
       dateOfBirth: '',
+      userCode: '',
       role: 3, // Default to Athlete
       gymAction: 'join',
       gymCode: '',
@@ -108,6 +110,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, isLoading 
         address: data.address,
         gender: data.gender,
         dateOfBirth: data.dateOfBirth,
+        userCode: data.userCode,
       },
       gymAction: data.gymAction as GymAction,
       gymCode: data.gymAction === 'join' ? data.gymCode || null : null,
@@ -291,6 +294,25 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, isLoading 
                 {selectedRole === 3 ? t('role_athlete') : (selectedRole === 1 ? t('role_coach') : t('role_manager'))} Options
               </Typography>
 
+              {(selectedRole === 1 || selectedRole === 2) && (
+                <Controller
+                  name="userCode"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label={selectedRole === 1 ? t('coach_code') : t('manager_code')}
+                      variant="outlined"
+                      error={!!errors.userCode}
+                      helperText={errors.userCode?.message}
+                      disabled={isLoading}
+                      sx={{ mb: 3 }}
+                    />
+                  )}
+                />
+              )}
+
               <Controller
                 name="gymAction"
                 control={control}
@@ -323,22 +345,44 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, isLoading 
               />
 
               {selectedGymAction === 'join' && (
-                <Controller
-                  name="gymCode"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label={t('gym_code')}
-                      variant="outlined"
-                      error={!!errors.gymCode}
-                      helperText={errors.gymCode?.message}
-                      disabled={isLoading}
-                      sx={{ mb: 1 }}
-                    />
+                <Grid container spacing={2} sx={{ mb: 1 }}>
+                  {selectedRole === 3 && (
+                    <Grid item xs={12} sm={6}>
+                      <Controller
+                        name="userCode"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            fullWidth
+                            label={t('athlete_code')}
+                            variant="outlined"
+                            error={!!errors.userCode}
+                            helperText={errors.userCode?.message}
+                            disabled={isLoading}
+                          />
+                        )}
+                      />
+                    </Grid>
                   )}
-                />
+                  <Grid item xs={12} sm={selectedRole === 3 ? 6 : 12}>
+                    <Controller
+                      name="gymCode"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          label={t('gym_code')}
+                          variant="outlined"
+                          error={!!errors.gymCode}
+                          helperText={errors.gymCode?.message}
+                          disabled={isLoading}
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
               )}
 
               {selectedGymAction === 'create' && (

@@ -6,6 +6,7 @@ export interface BaseUser {
   address?: string;
   gender: number; // 0=female, 1=male, 2=other
   dateOfBirth: string; // YYYY-MM-DD
+  userCode?: string;
 }
 
 export interface UserResponse {
