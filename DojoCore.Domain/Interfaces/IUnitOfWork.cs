@@ -7,6 +7,7 @@ public interface IUnitOfWork
     IUserGymRepository UserGyms { get; }
     IDocumentRepository Documents { get; }
     IMenuItemRepository MenuItems { get; }
+    IAthleteRepository Athletes { get; }
 
     Task BeginTransactionAsync(CancellationToken ct = default);
     Task CommitAsync(CancellationToken ct = default);
