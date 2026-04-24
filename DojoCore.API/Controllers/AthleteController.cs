@@ -1,4 +1,5 @@
 using DojoCore.Application.DTOs.Athlete;
+using DojoCore.Application.DTOs.Map;
 using DojoCore.Application.Exceptions;
 using DojoCore.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace DojoCore.API.Controllers;
 public class AthleteController : ControllerBase
 {
     private readonly IAthleteService _athleteService;
+    private readonly IMapService _mapService;
 
-    public AthleteController(IAthleteService athleteService)
+    public AthleteController(IAthleteService athleteService, IMapService mapService)
     {
         _athleteService = athleteService;
+        _mapService = mapService;
     }
 
     /// <summary>Returns all athletes.</summary>
@@ -81,6 +84,17 @@ public class AthleteController : ControllerBase
                     ModelState.AddModelError(field, err);
             return BadRequest(ModelState);
         }
+    }
+
+    /// <summary>Returns map pins (id, name, latitude, longitude) for all athletes.</summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <response code="200">List of athlete map pins.</response>
+    [HttpGet("pins")]
+    [ProducesResponseType(typeof(List<MapPinDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPins(CancellationToken ct)
+    {
+        var pins = await _mapService.GetAthletePinsAsync(ct);
+        return Ok(pins);
     }
 
     /// <summary>Deletes an athlete by id.</summary>

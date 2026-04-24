@@ -1,4 +1,5 @@
 using DojoCore.Application.DTOs.Coach;
+using DojoCore.Application.DTOs.Map;
 using DojoCore.Application.Exceptions;
 using DojoCore.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace DojoCore.API.Controllers;
 public class CoachController : ControllerBase
 {
     private readonly ICoachService _coachService;
+    private readonly IMapService _mapService;
 
-    public CoachController(ICoachService coachService)
+    public CoachController(ICoachService coachService, IMapService mapService)
     {
         _coachService = coachService;
+        _mapService = mapService;
     }
 
     /// <summary>Returns all coaches.</summary>
@@ -81,6 +84,17 @@ public class CoachController : ControllerBase
                     ModelState.AddModelError(field, err);
             return BadRequest(ModelState);
         }
+    }
+
+    /// <summary>Returns map pins (id, name, latitude, longitude) for all coaches.</summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <response code="200">List of coach map pins.</response>
+    [HttpGet("pins")]
+    [ProducesResponseType(typeof(List<MapPinDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPins(CancellationToken ct)
+    {
+        var pins = await _mapService.GetCoachPinsAsync(ct);
+        return Ok(pins);
     }
 
     /// <summary>Deletes a coach by id.</summary>

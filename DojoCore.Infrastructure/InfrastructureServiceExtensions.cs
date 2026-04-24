@@ -40,6 +40,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IManagerService, ManagerService>();
         services.AddScoped<ICoachService, CoachService>();
         services.AddScoped<IGymService, GymService>();
+        services.AddScoped<IMapService, MapService>();
 
         return services;
     }

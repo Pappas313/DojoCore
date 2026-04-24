@@ -1,4 +1,5 @@
 using DojoCore.Application.DTOs.Manager;
+using DojoCore.Application.DTOs.Map;
 using DojoCore.Application.Exceptions;
 using DojoCore.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace DojoCore.API.Controllers;
 public class ManagerController : ControllerBase
 {
     private readonly IManagerService _managerService;
+    private readonly IMapService _mapService;
 
-    public ManagerController(IManagerService managerService)
+    public ManagerController(IManagerService managerService, IMapService mapService)
     {
         _managerService = managerService;
+        _mapService = mapService;
     }
 
     /// <summary>Returns all managers.</summary>
@@ -81,6 +84,17 @@ public class ManagerController : ControllerBase
                     ModelState.AddModelError(field, err);
             return BadRequest(ModelState);
         }
+    }
+
+    /// <summary>Returns map pins (id, name, latitude, longitude) for all managers.</summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <response code="200">List of manager map pins.</response>
+    [HttpGet("pins")]
+    [ProducesResponseType(typeof(List<MapPinDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPins(CancellationToken ct)
+    {
+        var pins = await _mapService.GetManagerPinsAsync(ct);
+        return Ok(pins);
     }
 
     /// <summary>Deletes a manager by id.</summary>

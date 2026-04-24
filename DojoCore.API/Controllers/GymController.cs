@@ -2,6 +2,7 @@ using DojoCore.Application.DTOs.Athlete;
 using DojoCore.Application.DTOs.Coach;
 using DojoCore.Application.DTOs.Gym;
 using DojoCore.Application.DTOs.Manager;
+using DojoCore.Application.DTOs.Map;
 using DojoCore.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,10 +18,12 @@ namespace DojoCore.API.Controllers;
 public class GymController : ControllerBase
 {
     private readonly IGymService _gymService;
+    private readonly IMapService _mapService;
 
-    public GymController(IGymService gymService)
+    public GymController(IGymService gymService, IMapService mapService)
     {
         _gymService = gymService;
+        _mapService = mapService;
     }
 
     /// <summary>Returns all gyms.</summary>
@@ -102,6 +105,17 @@ public class GymController : ControllerBase
             return NotFound(new { error = "NotFound", message = $"Gym '{id}' was not found." });
 
         return Ok(result);
+    }
+
+    /// <summary>Returns map pins (id, name, latitude, longitude) for all gyms.</summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <response code="200">List of gym map pins.</response>
+    [HttpGet("pins")]
+    [ProducesResponseType(typeof(List<MapPinDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPins(CancellationToken ct)
+    {
+        var pins = await _mapService.GetGymPinsAsync(ct);
+        return Ok(pins);
     }
 
     /// <summary>Returns all gyms with their members grouped by role (coaches, managers, athletes).</summary>
