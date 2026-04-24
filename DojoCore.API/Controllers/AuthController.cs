@@ -84,6 +84,23 @@ public class AuthController : ControllerBase
         }
     }
 
+    /// <summary>Logs out the current user by clearing the access token cookie.</summary>
+    [HttpPost("logout")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Logout(CancellationToken ct)
+    {
+        await _authService.LogoutAsync(ct);
+
+        Response.Cookies.Delete("accessToken", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure   = true,
+            SameSite = SameSiteMode.Strict
+        });
+
+        return Ok(new { message = "Logged out successfully." });
+    }
+
     /// <summary>Registers a new user. Accepts multipart/form-data or application/json.</summary>
     [HttpPost("register")]
     [Consumes("multipart/form-data", "application/json")]

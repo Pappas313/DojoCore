@@ -217,6 +217,11 @@ public class AuthService : IAuthService
         return (response, token);
     }
 
+    public Task LogoutAsync(CancellationToken ct = default)
+    {
+        return Task.CompletedTask;
+    }
+
     private static string GenerateUserCode() =>
         Guid.NewGuid().ToString("N")[..10].ToUpper();
 

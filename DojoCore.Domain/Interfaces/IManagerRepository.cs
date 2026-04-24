@@ -5,6 +5,7 @@ namespace DojoCore.Domain.Interfaces;
 public interface IManagerRepository
 {
     Task<IEnumerable<User>> GetAllAsync(CancellationToken ct = default);
+    Task<IEnumerable<User>> GetByGymIdAsync(Guid gymId, CancellationToken ct = default);
     Task<User?> GetByIdAsync(Guid id, CancellationToken ct = default);
     Task<bool> ExistsAsync(Guid id, CancellationToken ct = default);
     Task UpdateAsync(User user, CancellationToken ct = default);

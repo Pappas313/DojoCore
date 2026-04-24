@@ -47,6 +47,34 @@ public class CoachRepository : ICoachRepository
         return await _connection.QueryAsync<User>(cmd);
     }
 
+    public async Task<IEnumerable<User>> GetByGymIdAsync(Guid gymId, CancellationToken ct)
+    {
+        const string sql = """
+            SELECT u.id             AS "Id",
+                   u.username       AS "Username",
+                   u.email          AS "Email",
+                   u.password_hash  AS "PasswordHash",
+                   u.user_code      AS "UserCode",
+                   u.role           AS "Role",
+                   u.address        AS "Address",
+                   u.gender         AS "Gender",
+                   u.date_of_birth  AS "DateOfBirth",
+                   u.latitude       AS "Latitude",
+                   u.longitude      AS "Longitude",
+                   u.status         AS "Status",
+                   u.created_at     AS "CreatedAt",
+                   u.updated_at     AS "UpdatedAt"
+            FROM users u
+            INNER JOIN user_gym ug ON ug.user_id = u.id
+            WHERE u.role = @Role AND ug.gym_id = @GymId
+            ORDER BY u.created_at DESC
+            """;
+
+        var cmd = new CommandDefinition(sql, new { Role = CoachRole, GymId = gymId },
+            transaction: _transaction(), cancellationToken: ct);
+        return await _connection.QueryAsync<User>(cmd);
+    }
+
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken ct)
     {
         var cmd = new CommandDefinition(

@@ -16,14 +16,35 @@ public class GymRepository : IGymRepository
         _transaction = transaction;
     }
 
+    private const string SelectColumns = """
+        SELECT id, name, address, latitude, longitude, gym_code AS GymCode,
+               created_by AS CreatedBy, status, created_at AS CreatedAt, updated_at AS UpdatedAt
+        FROM gyms
+        """;
+
+    public async Task<IEnumerable<Gym>> GetAllAsync(CancellationToken ct)
+    {
+        var cmd = new CommandDefinition(
+            SelectColumns + " ORDER BY created_at DESC",
+            transaction: _transaction(),
+            cancellationToken: ct);
+        return await _connection.QueryAsync<Gym>(cmd);
+    }
+
+    public async Task<Gym?> GetByIdAsync(Guid id, CancellationToken ct)
+    {
+        var cmd = new CommandDefinition(
+            SelectColumns + " WHERE id = @Id",
+            new { Id = id },
+            transaction: _transaction(),
+            cancellationToken: ct);
+        return await _connection.QueryFirstOrDefaultAsync<Gym>(cmd);
+    }
+
     public async Task<Gym?> GetByCodeAsync(string gymCode, CancellationToken ct)
     {
         var cmd = new CommandDefinition(
-            """
-            SELECT id, name, address, latitude, longitude, gym_code AS GymCode,
-                   created_by AS CreatedBy, status, created_at AS CreatedAt, updated_at AS UpdatedAt
-            FROM gyms WHERE gym_code = @GymCode
-            """,
+            SelectColumns + " WHERE gym_code = @GymCode",
             new { GymCode = gymCode },
             transaction: _transaction(),
             cancellationToken: ct);
