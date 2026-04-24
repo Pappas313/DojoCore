@@ -198,6 +198,6 @@ public class RegisterOperationFilter : IOperationFilter
         Type        = type,
         Format      = format,
         Description = description,
-        Enum        = enums
+            Enum = enums
     };
 }

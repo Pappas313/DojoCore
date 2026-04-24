@@ -16,4 +16,7 @@
     <ProjectReference Include="..\DojoCore.Application\DojoCore.Application.csproj" />
     <ProjectReference Include="..\DojoCore.Domain\DojoCore.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
 </Project>
