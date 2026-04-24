@@ -37,6 +37,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IMenuService, MenuService>();
         services.AddScoped<IAthleteService, AthleteService>();
+        services.AddScoped<IManagerService, ManagerService>();
 
         return services;
     }
