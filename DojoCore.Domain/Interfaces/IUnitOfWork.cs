@@ -9,6 +9,7 @@ public interface IUnitOfWork
     IMenuItemRepository MenuItems { get; }
     IAthleteRepository Athletes { get; }
     IManagerRepository Managers { get; }
+    ICoachRepository Coaches { get; }
 
     Task BeginTransactionAsync(CancellationToken ct = default);
     Task CommitAsync(CancellationToken ct = default);

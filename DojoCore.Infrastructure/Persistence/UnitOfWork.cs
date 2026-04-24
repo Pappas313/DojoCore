@@ -16,6 +16,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public IMenuItemRepository MenuItems { get; }
     public IAthleteRepository Athletes { get; }
     public IManagerRepository Managers { get; }
+    public ICoachRepository Coaches { get; }
 
     public UnitOfWork(NpgsqlConnection connection)
     {
@@ -28,6 +29,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         MenuItems = new MenuItemRepository(_connection, () => _transaction);
         Athletes = new AthleteRepository(_connection, () => _transaction);
         Managers = new ManagerRepository(_connection, () => _transaction);
+        Coaches = new CoachRepository(_connection, () => _transaction);
     }
 
     public Task BeginTransactionAsync(CancellationToken ct = default)
