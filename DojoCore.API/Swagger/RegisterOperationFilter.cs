@@ -193,7 +193,7 @@ public class RegisterOperationFilter : IOperationFilter
         JsonSchemaType type,
         string? format = null,
         string? description = null,
-        List<JsonNode?>? enums = null) => new()
+        IList<JsonNode>? enums = null) => new()
     {
         Type        = type,
         Format      = format,

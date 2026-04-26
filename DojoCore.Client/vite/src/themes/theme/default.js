@@ -12,11 +12,11 @@ const defaultColor = {
   primary800: '#1565c0',
 
   // secondary
-  secondaryLight: '#ede7f6',
-  secondary200: '#b39ddb',
-  secondaryMain: '#673ab7',
-  secondaryDark: '#5e35b1',
-  secondary800: '#4527a0',
+  secondaryLight: '#e3f2fd',
+  secondary200: '#90caf9',
+  secondaryMain: '#1976d2',
+  secondaryDark: '#1565c0',
+  secondary800: '#0d47a1',
 
   // success
   successLight: '#b9f6ca',
@@ -72,11 +72,11 @@ const defaultColor = {
   darkPrimary800: '#1565c0',
 
   // secondary dark
-  darkSecondaryLight: '#d1c4e9',
-  darkSecondaryMain: '#7c4dff',
-  darkSecondaryDark: '#651fff',
-  darkSecondary200: '#b39ddb',
-  darkSecondary800: '#6200ea'
+  darkSecondaryLight: '#bbdefb',
+  darkSecondaryMain: '#448aff',
+  darkSecondaryDark: '#2979ff',
+  darkSecondary200: '#90caf9',
+  darkSecondary800: '#2962ff'
 };
 
 export default defaultColor;

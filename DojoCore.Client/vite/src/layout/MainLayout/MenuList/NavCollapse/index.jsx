@@ -192,6 +192,28 @@ export default function NavCollapse({ menu, level, parentId }) {
                   }}
                 >
                   {menu.title}
+                  {menu.pageCode && (
+                    <Box
+                      component="span"
+                      sx={{
+                        ml: 0.75,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        bgcolor: '#a7bad9',
+                        color: '#1976d2',
+                        fontSize: '0.6rem',
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        verticalAlign: 'middle'
+                      }}
+                    >
+                      {menu.pageCode}
+                    </Box>
+                  )}
                 </Typography>
               }
               secondary={

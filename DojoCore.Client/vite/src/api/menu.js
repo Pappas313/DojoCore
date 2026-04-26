@@ -65,6 +65,7 @@ function transformMenuItem(apiItem, depth = 0) {
   const item = {
     id: String(apiItem.id),
     title: apiItem.title,
+    pageCode: apiItem.pageCode,
     type,
     url: apiItem.url,
     icon: getIconComponent(apiItem.icon)

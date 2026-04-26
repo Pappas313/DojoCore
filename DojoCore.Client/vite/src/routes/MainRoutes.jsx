@@ -16,6 +16,9 @@ const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
 // sample page routing
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 
+// main page routing
+const MainPage = Loadable(lazy(() => import('views/main')));
+
 // users routing
 const AthletesListPage = Loadable(lazy(() => import('views/users/athletes/AthletesListPage')));
 const CoachesListPage = Loadable(lazy(() => import('views/users/coaches/CoachesListPage')));
@@ -62,7 +65,7 @@ const MainRoutes = {
     },
     {
       path: '/main',
-      element: <SamplePage />
+      element: <MainPage />
     },
     {
       path: 'users',

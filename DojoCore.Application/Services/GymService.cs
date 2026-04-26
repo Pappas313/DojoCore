@@ -87,16 +87,14 @@ public class GymService : IGymService
     private async Task<(List<CoachDto> coaches, List<ManagerDto> managers, List<AthleteDto> athletes)>
         FetchMembersAsync(Guid gymId, CancellationToken ct)
     {
-        var coachTask   = _uow.Coaches.GetByGymIdAsync(gymId, ct);
-        var managerTask = _uow.Managers.GetByGymIdAsync(gymId, ct);
-        var athleteTask = _uow.Athletes.GetByGymIdAsync(gymId, ct);
-
-        await Task.WhenAll(coachTask, managerTask, athleteTask);
+        var coaches  = await _uow.Coaches.GetByGymIdAsync(gymId, ct);
+        var managers = await _uow.Managers.GetByGymIdAsync(gymId, ct);
+        var athletes = await _uow.Athletes.GetByGymIdAsync(gymId, ct);
 
         return (
-            coachTask.Result.Select(MapToCoachDto).ToList(),
-            managerTask.Result.Select(MapToManagerDto).ToList(),
-            athleteTask.Result.Select(MapToAthleteDto).ToList()
+            coaches.Select(MapToCoachDto).ToList(),
+            managers.Select(MapToManagerDto).ToList(),
+            athletes.Select(MapToAthleteDto).ToList()
         );
     }
     private static GymDto MapToDto(Gym g) => new()
