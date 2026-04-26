@@ -1,16 +1,16 @@
-import { memo, useState } from 'react';
+import { Activity, memo, useState } from 'react';
 
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
-import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 // project imports
 import NavItem from './NavItem';
 import NavGroup from './NavGroup';
+import menuItems from 'menu-items';
 
-import { useGetMenuMaster, useGetApiMenu } from 'api/menu';
+import { useGetMenuMaster } from 'api/menu';
 
 // ==============================|| SIDEBAR MENU LIST ||============================== //
 
@@ -18,37 +18,37 @@ function MenuList() {
   const { menuMaster } = useGetMenuMaster();
   const drawerOpen = menuMaster.isDashboardDrawerOpened;
 
-  const { apiMenuItems, apiMenuLoading, apiMenuError } = useGetApiMenu();
-
   const [selectedID, setSelectedID] = useState('');
 
-  if (apiMenuLoading) {
-    return (
-      <Box sx={{ px: 2, mt: 1 }}>
-        {[1, 2, 3, 4].map((n) => (
-          <Skeleton key={n} variant="rectangular" height={36} sx={{ mb: 1, borderRadius: 1 }} />
-        ))}
-      </Box>
-    );
+  const lastItem = null;
+
+  let lastItemIndex = menuItems.items.length - 1;
+  let remItems = [];
+  let lastItemId;
+
+  if (lastItem && lastItem < menuItems.items.length) {
+    lastItemId = menuItems.items[lastItem - 1].id;
+    lastItemIndex = lastItem - 1;
+    remItems = menuItems.items.slice(lastItem - 1, menuItems.items.length).map((item) => ({
+      title: item.title,
+      elements: item.children,
+      icon: item.icon,
+      ...(item.url && {
+        url: item.url
+      })
+    }));
   }
 
-  if (apiMenuError) {
-    return (
-      <Typography variant="body2" align="center" sx={{ color: 'error.main', mt: 2 }}>
-        Failed to load menu.
-      </Typography>
-    );
-  }
-
-  const navItems = apiMenuItems.map((item) => {
+  const navItems = menuItems.items.slice(0, lastItemIndex + 1).map((item, index) => {
     switch (item.type) {
       case 'group':
-        // Only render as a direct NavItem link when there are no children
-        if (item.url && !item.children?.length) {
+        if (item.url && item.id !== lastItemId) {
           return (
             <List key={item.id}>
               <NavItem item={item} level={1} isParents setSelectedID={() => setSelectedID('')} />
-              <Divider sx={{ py: 0.5 }} />
+              <Activity mode={index !== 0 ? 'visible' : 'hidden'}>
+                <Divider sx={{ py: 0.5 }} />
+              </Activity>
             </List>
           );
         }
@@ -59,9 +59,9 @@ function MenuList() {
             setSelectedID={setSelectedID}
             selectedID={selectedID}
             item={item}
-            lastItem={null}
-            remItems={[]}
-            lastItemId={''}
+            lastItem={lastItem}
+            remItems={remItems}
+            lastItemId={lastItemId}
           />
         );
       default:

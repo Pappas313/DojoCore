@@ -85,36 +85,11 @@ export function buildPalette(presetColor) {
   const extendedLight = extendPaletteWithChannels(lightColors);
   const extendedCommon = extendPaletteWithChannels(commonColor);
 
-  const darkColors = {
-    primary: {
-      light: colors.primaryLight,
-      main: colors.primaryMain,
-      dark: colors.primaryDark,
-      200: colors.primary200,
-      800: colors.primary800
-    },
-    secondary: {
-      light: colors.secondaryLight,
-      main: colors.secondaryMain,
-      dark: colors.secondaryDark,
-      200: colors.secondary200,
-      800: colors.secondary800
-    },
-    error: { light: colors.errorLight, main: colors.errorMain, dark: colors.errorDark },
-    orange: { light: colors.orangeLight, main: colors.orangeMain, dark: colors.orangeDark },
-    warning: { light: colors.warningLight, main: colors.warningMain, dark: colors.warningDark, contrastText: colors.grey700 },
-    success: { light: colors.successLight, 200: colors.success200, main: colors.successMain, dark: colors.successDark },
-    grey: { 50: colors.grey50, 100: colors.grey100, 500: colors.grey500, 600: colors.grey600, 700: colors.grey700, 900: colors.grey900 },
-    dark: { light: colors.darkTextPrimary, main: colors.darkLevel1, dark: colors.darkLevel2, 800: colors.darkBackground, 900: colors.darkPaper },
-    text: { primary: '#e0e0e0', secondary: '#b0b0b0', dark: '#ffffff', hint: '#616161', heading: '#ffffff' },
-    divider: '#424242',
-    background: { paper: '#1e1e2e', default: '#12121f' }
-  };
-
-  const extendedDark = extendPaletteWithChannels(darkColors);
-
   return {
-    light: { mode: 'light', ...extendedCommon, ...extendedLight },
-    dark: { mode: 'dark', ...extendedCommon, ...extendedDark }
+    light: {
+      mode: 'light',
+      ...extendedCommon,
+      ...extendedLight
+    }
   };
 }

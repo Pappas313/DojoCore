@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 // material-ui
-import { useTheme, useColorScheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Divider from '@mui/material/Divider';
+import InputAdornment from '@mui/material/InputAdornment';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import Stack from '@mui/material/Stack';
@@ -19,30 +22,26 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 // project imports
+import UpgradePlanCard from './UpgradePlanCard';
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 import useConfig from 'hooks/useConfig';
-import { useAuth } from 'contexts/AuthContext';
 
 // assets
 import User1 from 'assets/images/users/user-round.svg';
-import { IconLogout, IconMoon, IconSettings, IconSun, IconUser } from '@tabler/icons-react';
+import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons-react';
 
 // ==============================|| PROFILE MENU ||============================== //
 
-const ROLE_LABELS = { 1: 'Admin', 2: 'Manager', 3: 'Athlete' };
-const roleLabel = (role) => ROLE_LABELS[role] ?? `Role ${role}`;
-
 export default function ProfileSection() {
   const theme = useTheme();
-  const navigate = useNavigate();
-  const { logout, user } = useAuth();
-  const { mode, setMode } = useColorScheme();
   const {
     state: { borderRadius }
   } = useConfig();
 
-  const isDark = mode === 'dark';
+  const [sdm, setSdm] = useState(true);
+  const [value, setValue] = useState('');
+  const [notification, setNotification] = useState(false);
   const [open, setOpen] = useState(false);
 
   /**
@@ -70,11 +69,6 @@ export default function ProfileSection() {
 
     prevOpen.current = open;
   }, [open]);
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/pages/login', { replace: true });
-  };
 
   return (
     <>
@@ -127,12 +121,26 @@ export default function ProfileSection() {
                         <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
                           <Typography variant="h4">Good Morning,</Typography>
                           <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                            {user?.username || user?.email || 'User'}
+                            Johne Doe
                           </Typography>
                         </Stack>
-                        <Typography variant="subtitle2">{user?.role != null ? roleLabel(user.role) : ''}</Typography>
+                        <Typography variant="subtitle2">Project Admin</Typography>
                       </Stack>
-                      <Divider sx={{ mt: 2 }} />
+                      <OutlinedInput
+                        sx={{ width: '100%', pr: 1, pl: 2, my: 2 }}
+                        id="input-search-profile"
+                        value={value}
+                        onChange={(e) => setValue(e.target.value)}
+                        placeholder="Search profile options"
+                        startAdornment={
+                          <InputAdornment position="start">
+                            <IconSearch stroke={1.5} size="16px" />
+                          </InputAdornment>
+                        }
+                        aria-describedby="search-helper-text"
+                        slotProps={{ input: { 'aria-label': 'weight' } }}
+                      />
+                      <Divider />
                     </Box>
                     <Box
                       sx={{
@@ -144,6 +152,23 @@ export default function ProfileSection() {
                         '&::-webkit-scrollbar': { width: 5 }
                       }}
                     >
+                      <UpgradePlanCard />
+                      <Divider />
+                      <Card sx={{ bgcolor: 'primary.light', my: 2 }}>
+                        <CardContent>
+                          <Stack sx={{ gap: 3 }}>
+                            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                              <Typography variant="subtitle1">Start DND Mode</Typography>
+                              <Switch color="primary" checked={sdm} onChange={(e) => setSdm(e.target.checked)} name="sdm" size="small" />
+                            </Stack>
+                            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                              <Typography variant="subtitle1">Allow Notifications</Typography>
+                              <Switch checked={notification} onChange={(e) => setNotification(e.target.checked)} name="sdm" size="small" />
+                            </Stack>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                      <Divider />
                       <List
                         component="nav"
                         sx={{
@@ -164,16 +189,24 @@ export default function ProfileSection() {
                           <ListItemIcon>
                             <IconUser stroke={1.5} size="20px" />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Profile</Typography>} />
+                          <ListItemText
+                            primary={
+                              <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Typography variant="body2">Social Profile</Typography>
+                                <Chip
+                                  slotProps={{
+                                    label: { sx: { mt: 0.25 } }
+                                  }}
+                                  label="02"
+                                  variant="filled"
+                                  size="small"
+                                  color="warning"
+                                />
+                              </Stack>
+                            }
+                          />
                         </ListItemButton>
-                        <ListItemButton sx={{ borderRadius: `${borderRadius}px` }} onClick={() => setMode(isDark ? 'light' : 'dark')}>
-                          <ListItemIcon>
-                            {isDark ? <IconSun stroke={1.5} size="20px" /> : <IconMoon stroke={1.5} size="20px" />}
-                          </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">{isDark ? 'Light Mode' : 'Dark Mode'}</Typography>} />
-                          <Switch checked={isDark} onChange={() => setMode(isDark ? 'light' : 'dark')} size="small" color="primary" onClick={(e) => e.stopPropagation()} />
-                        </ListItemButton>
-                        <ListItemButton sx={{ borderRadius: `${borderRadius}px` }} onClick={handleLogout}>
+                        <ListItemButton sx={{ borderRadius: `${borderRadius}px` }}>
                           <ListItemIcon>
                             <IconLogout stroke={1.5} size="20px" />
                           </ListItemIcon>

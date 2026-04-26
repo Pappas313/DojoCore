@@ -6,7 +6,6 @@ import { Link, matchPath, useLocation } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 import Chip from '@mui/material/Chip';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -135,28 +134,6 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
                   }}
                 >
                   {item.title}
-                  {item.pageCode && (
-                    <Box
-                      component="span"
-                      sx={{
-                        ml: 0.75,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 20,
-                        height: 20,
-                        borderRadius: '50%',
-                        bgcolor: '#a7bad9',
-                        color: '#1976d2',
-                        fontSize: '0.6rem',
-                        fontWeight: 700,
-                        lineHeight: 1,
-                        verticalAlign: 'middle'
-                      }}
-                    >
-                      {item.pageCode}
-                    </Box>
-                  )}
                 </Typography>
               }
               secondary={

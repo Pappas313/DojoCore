@@ -1,5 +1,5 @@
-export const DASHBOARD_PATH = '/main';
-export const DEFAULT_THEME_MODE = 'light';
+export const DASHBOARD_PATH = '/sample-page';
+export const DEFAULT_THEME_MODE = 'system';
 
 export const CSS_VAR_PREFIX = '';
 

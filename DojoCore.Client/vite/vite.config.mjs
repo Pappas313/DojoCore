@@ -14,14 +14,7 @@ export default defineConfig(({ mode }) => {
       open: true,
       // this sets a default port to 3000
       port: PORT,
-      host: true,
-      proxy: {
-        '/api': {
-          target: env.VITE_APP_API_URL || 'http://localhost:5000',
-          changeOrigin: true,
-          secure: false
-        }
-      }
+      host: true
     },
     build: {
       chunkSizeWarningLimit: 1600

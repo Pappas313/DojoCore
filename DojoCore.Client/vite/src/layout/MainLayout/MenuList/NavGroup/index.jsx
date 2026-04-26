@@ -36,9 +36,6 @@ export default function NavGroup({ item, lastItem, remItems, lastItemId, setSele
       } else {
         setCurrentItem(item);
       }
-    } else {
-      // Keep currentItem in sync when item prop updates (e.g. after API load)
-      setCurrentItem(item);
     }
   }, [item, lastItem, remItems, lastItemId]);
 

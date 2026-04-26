@@ -12,7 +12,7 @@ import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 import Box from '@mui/material/Box';
 
 // project imports
-import { useGetApiMenu } from 'api/menu';
+import navigation from 'menu-items';
 
 // assets
 import { IconChevronRight, IconTallymark1 } from '@tabler/icons-react';
@@ -50,7 +50,6 @@ export default function Breadcrumbs({
 }) {
   const theme = useTheme();
   const location = useLocation();
-  const { apiMenuItems } = useGetApiMenu();
   const [main, setMain] = useState();
   const [item, setItem] = useState();
 
@@ -72,7 +71,7 @@ export default function Breadcrumbs({
   let customLocation = location.pathname;
 
   useEffect(() => {
-    (apiMenuItems || []).map((menu) => {
+    navigation?.items?.map((menu) => {
       if (menu.type && menu.type === 'group') {
         if (menu?.url && menu.url === customLocation) {
           setMain(menu);
