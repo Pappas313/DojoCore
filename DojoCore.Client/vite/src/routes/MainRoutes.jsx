@@ -28,6 +28,9 @@ const ManagersListPage = Loadable(lazy(() => import('views/users/managers/Manage
 const GymsListPage = Loadable(lazy(() => import('views/gyms/GymsListPage')));
 const GymMembershipsPage = Loadable(lazy(() => import('views/gyms/GymMembershipsPage')));
 
+// admin routing
+const MenuManagePage = Loadable(lazy(() => import('views/menu/MenuManagePage')));
+
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -94,6 +97,15 @@ const MainRoutes = {
         {
           path: 'memberships',
           element: <GymMembershipsPage />
+        }
+      ]
+    },
+    {
+      path: 'admin',
+      children: [
+        {
+          path: 'menu',
+          element: <MenuManagePage />
         }
       ]
     }

@@ -10,6 +10,7 @@ public interface IUnitOfWork
     IAthleteRepository Athletes { get; }
     IManagerRepository Managers { get; }
     ICoachRepository Coaches { get; }
+    ITranslationRepository Translations { get; }
 
     Task BeginTransactionAsync(CancellationToken ct = default);
     Task CommitAsync(CancellationToken ct = default);
