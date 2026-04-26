@@ -1,0 +1,13 @@
+{
+  "name": "dojo-core-client",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npm start --prefix vite",
+    "build": "npm run build --prefix vite",
+    "preview": "npm run preview --prefix vite",
+    "install": "npm install --prefix vite",
+    "lint": "npm run lint --prefix vite",
+    "lint:fix": "npm run lint:fix --prefix vite"
+  }
+}
