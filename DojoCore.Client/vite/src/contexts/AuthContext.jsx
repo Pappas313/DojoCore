@@ -27,10 +27,10 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
-  const register = useCallback(async (userData) => {
+  const register = useCallback(async (userData, files) => {
     setIsLoading(true);
     try {
-      const data = await registerApi(userData);
+      const data = await registerApi(userData, files);
       setUser(data);
     } finally {
       setIsLoading(false);

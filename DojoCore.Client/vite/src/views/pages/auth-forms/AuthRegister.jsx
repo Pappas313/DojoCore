@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 
@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -17,6 +18,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import Paper from '@mui/material/Paper';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Select from '@mui/material/Select';
@@ -33,92 +35,185 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 import { useAuth } from 'contexts/AuthContext';
 import { DASHBOARD_PATH } from 'config';
 
-// assets
+// icons
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
-// â”€â”€â”€ Validation Schemas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-const step0Schema = Yup.object({
+// ---------------------------------------------------------------------------
+// Validation schemas
+// ---------------------------------------------------------------------------
+const accountSchema = Yup.object({
   username: Yup.string().min(3, 'Min 3 characters').max(60).required('Username is required'),
   email: Yup.string().email('Must be a valid email').required('Email is required'),
   password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
   role: Yup.number().oneOf([2, 3], 'Select a role').required('Role is required'),
   gender: Yup.number().oneOf([0, 1], 'Select a gender').required('Gender is required'),
   dateOfBirth: Yup.string().required('Date of birth is required'),
-  address: Yup.string().max(100)
+  address: Yup.string().max(100).nullable()
 });
 
-const step1Schema = Yup.object({
-  gymAction: Yup.string().oneOf(['none', 'join', 'create']).required('Select a gym option'),
-  gymCode: Yup.string().when('gymAction', {
-    is: 'join',
-    then: (s) => s.required('Gym code is required'),
-    otherwise: (s) => s.nullable()
-  }),
+const athleteSchema = Yup.object({
+  athleteAction: Yup.string().oneOf(['freelance', 'gym_member'], 'Select an option').required('Select an option')
+});
+
+const gymSchema = Yup.object({
+  gymAction: Yup.string().oneOf(['create', 'join'], 'Select a gym option').required('Select a gym option'),
   gymName: Yup.string().when('gymAction', {
     is: 'create',
     then: (s) => s.max(255).required('Gym name is required'),
     otherwise: (s) => s.nullable()
   }),
-  gymAddress: Yup.string().when('gymAction', {
-    is: 'create',
-    then: (s) => s.max(20, 'Max 20 characters').required('Gym address is required'),
+  gymCode: Yup.string().when('gymAction', {
+    is: (val) => val === 'create' || val === 'join',
+    then: (s) => s.max(20, 'Max 20 characters').required('Gym code is required'),
     otherwise: (s) => s.nullable()
-  })
+  }),
+  gymAddress: Yup.string().max(100).nullable()
 });
 
-const STEPS = ['Account Details', 'Gym Setup'];
+// ---------------------------------------------------------------------------
+// FileUploadZone
+// ---------------------------------------------------------------------------
+function FileUploadZone({ files, onFilesChange, label, description }) {
+  const inputRef = useRef(null);
+  const [dragging, setDragging] = useState(false);
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const addFiles = (newFiles) => {
+    const merged = [...files];
+    Array.from(newFiles).forEach((f) => {
+      if (!merged.find((x) => x.name === f.name && x.size === f.size)) merged.push(f);
+    });
+    onFilesChange(merged);
+  };
 
+  const removeFile = (index) => onFilesChange(files.filter((_, i) => i !== index));
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragging(false);
+    addFiles(e.dataTransfer.files);
+  };
+
+  return (
+    <Box>
+      <Typography variant="subtitle1" sx={{ mb: 0.5 }}>{label}</Typography>
+      {description && (
+        <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+          {description}
+        </Typography>
+      )}
+      <Paper
+        variant="outlined"
+        onClick={() => inputRef.current?.click()}
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={handleDrop}
+        sx={{
+          p: 3, textAlign: 'center', cursor: 'pointer', borderStyle: 'dashed',
+          borderColor: dragging ? 'primary.main' : 'divider',
+          bgcolor: dragging ? 'action.hover' : 'background.paper',
+          transition: 'border-color 0.2s, background-color 0.2s',
+          '&:hover': { borderColor: 'primary.main', bgcolor: 'action.hover' }
+        }}
+      >
+        <CloudUploadIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
+        <Typography variant="body2" color="text.secondary">
+          Drag &amp; drop files here or{' '}
+          <Typography component="span" color="primary.main" variant="body2">browse</Typography>
+        </Typography>
+        <input ref={inputRef} type="file" multiple hidden onChange={(e) => addFiles(e.target.files)} />
+      </Paper>
+      {files.length > 0 && (
+        <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mt: 1.5 }}>
+          {files.map((file, idx) => (
+            <Chip key={idx} icon={<InsertDriveFileIcon />} label={file.name}
+              onDelete={() => removeFile(idx)} variant="outlined" size="small" />
+          ))}
+        </Stack>
+      )}
+    </Box>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// AuthRegister
+// ---------------------------------------------------------------------------
 export default function AuthRegister() {
   const { register, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  // Step 0 state
   const [step, setStep] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [strength, setStrength] = useState(0);
   const [level, setLevel] = useState();
 
   const [account, setAccount] = useState({
-    username: '',
-    email: '',
-    password: '',
-    role: '',
-    gender: '',
-    dateOfBirth: '',
-    address: ''
+    username: '', email: '', password: '', role: '', gender: '', dateOfBirth: '', address: ''
   });
 
-  // Step 1 state
+  // Step 1 state (athletes only)
+  const [athleteSetup, setAthleteSetup] = useState({
+    athleteAction: '', // 'freelance' | 'gym_member'
+    userCode: ''
+  });
+
+  // Last step state (all roles)
   const [gymSetup, setGymSetup] = useState({
-    gymAction: 'none',
+    gymAction: '', // 'create' | 'join'
     gymCode: '',
     gymName: '',
     gymAddress: ''
   });
 
+  // File arrays
+  const [athleteFiles, setAthleteFiles] = useState([]);
+  const [gymFiles, setGymFiles] = useState([]);
+
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
 
+  const isAthlete = Number(account.role) === 3;
+
+  // Athletes: 3 steps; Managers: 2 steps
+  const steps = isAthlete
+    ? ['Account Details', 'Athlete Status', 'Gym Setup']
+    : ['Account Details', 'Gym Setup'];
+
+  const isLastStep = step === steps.length - 1;
+
   useEffect(() => {
-    setStrength(strengthIndicator(''));
-    setLevel(strengthColor(strengthIndicator('')));
+    const s = strengthIndicator('');
+    setStrength(s);
+    setLevel(strengthColor(s));
   }, []);
 
-  // â”€â”€ Handlers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+  // ---------------------------------------------------------------------------
+  // Handlers
+  // ---------------------------------------------------------------------------
   const handleAccountChange = (e) => {
     const { name, value } = e.target;
     setAccount((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: '' }));
+    if (name === 'role') {
+      setAthleteSetup({ athleteAction: '', userCode: '' });
+      setGymSetup({ gymAction: '', gymCode: '', gymName: '', gymAddress: '' });
+      setAthleteFiles([]);
+      setGymFiles([]);
+      setStep(0);
+    }
     if (name === 'password') {
       const s = strengthIndicator(value);
       setStrength(s);
       setLevel(strengthColor(s));
     }
+  };
+
+  const handleAthleteChange = (e) => {
+    const { name, value } = e.target;
+    setAthleteSetup((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleGymChange = (e) => {
@@ -130,18 +225,22 @@ export default function AuthRegister() {
   const handleNext = async () => {
     setServerError('');
     try {
-      await step0Schema.validate(account, { abortEarly: false });
+      if (step === 0) {
+        await accountSchema.validate(account, { abortEarly: false });
+      } else if (isAthlete && step === 1) {
+        await athleteSchema.validate(athleteSetup, { abortEarly: false });
+      }
       setErrors({});
-      setStep(1);
+      setStep((s) => s + 1);
     } catch (err) {
       const fieldErrors = {};
-      err.inner.forEach((e) => { fieldErrors[e.path] = e.message; });
+      (err.inner || []).forEach((e) => { fieldErrors[e.path] = e.message; });
       setErrors(fieldErrors);
     }
   };
 
   const handleBack = () => {
-    setStep(0);
+    setStep((s) => s - 1);
     setErrors({});
     setServerError('');
   };
@@ -149,15 +248,17 @@ export default function AuthRegister() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setServerError('');
-
     try {
-      await step1Schema.validate(gymSetup, { abortEarly: false });
+      await gymSchema.validate(gymSetup, { abortEarly: false });
     } catch (err) {
       const fieldErrors = {};
-      err.inner.forEach((e) => { fieldErrors[e.path] = e.message; });
+      (err.inner || []).forEach((e) => { fieldErrors[e.path] = e.message; });
       setErrors(fieldErrors);
       return;
     }
+
+    const isFreelance = isAthlete && athleteSetup.athleteAction === 'freelance';
+    const isGymMember = isAthlete && athleteSetup.athleteAction === 'gym_member';
 
     const payload = {
       user: {
@@ -167,43 +268,49 @@ export default function AuthRegister() {
         role: Number(account.role),
         address: account.address || null,
         gender: Number(account.gender),
-        dateOfBirth: account.dateOfBirth
+        dateOfBirth: account.dateOfBirth,
+        ...(isGymMember && athleteSetup.userCode ? { user_code: athleteSetup.userCode } : {})
       },
       gymAction: gymSetup.gymAction,
-      gymCode: gymSetup.gymAction === 'join' ? gymSetup.gymCode : null,
-      newGym:
-        gymSetup.gymAction === 'create'
-          ? { name: gymSetup.gymName, address: gymSetup.gymAddress }
-          : null
+      gymCode: gymSetup.gymCode || null,
+      newGym: gymSetup.gymAction === 'create'
+        ? { name: gymSetup.gymName, address: gymSetup.gymAddress || null, gym_code: gymSetup.gymCode }
+        : null
+    };
+
+    const files = {
+      athleteDocuments: isFreelance ? athleteFiles : [],
+      gymDocuments: gymSetup.gymAction === 'create' ? gymFiles : []
     };
 
     try {
-      await register(payload);
+      await register(payload, files);
       navigate(DASHBOARD_PATH);
     } catch (err) {
       setServerError(err.message || 'Registration failed. Please try again.');
     }
   };
 
-  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+  // ---------------------------------------------------------------------------
+  // Render
+  // ---------------------------------------------------------------------------
   return (
-    <Box component="form" onSubmit={step === 0 ? (e) => { e.preventDefault(); handleNext(); } : handleSubmit} noValidate>
+    <Box
+      component="form"
+      onSubmit={isLastStep ? handleSubmit : (e) => { e.preventDefault(); handleNext(); }}
+      noValidate
+    >
       <Stepper activeStep={step} sx={{ mb: 3 }}>
-        {STEPS.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
+        {steps.map((label) => (
+          <Step key={label}><StepLabel>{label}</StepLabel></Step>
         ))}
       </Stepper>
 
-      {serverError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {serverError}
-        </Alert>
-      )}
+      {serverError && <Alert severity="error" sx={{ mb: 2 }}>{serverError}</Alert>}
 
-      {/* â”€â”€ Step 0: Account Details â”€â”€ */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Step 0: Account Details                                              */}
+      {/* ------------------------------------------------------------------ */}
       {step === 0 && (
         <>
           <Grid container spacing={2}>
@@ -291,62 +398,126 @@ export default function AuthRegister() {
         </>
       )}
 
-      {/* â”€â”€ Step 1: Gym Setup â”€â”€ */}
-      {step === 1 && (
+      {/* ------------------------------------------------------------------ */}
+      {/* Step 1 (athletes only): Athlete Status                               */}
+      {/* ------------------------------------------------------------------ */}
+      {isAthlete && step === 1 && (
         <>
-          <FormControl component="fieldset" error={!!errors.gymAction} sx={{ mb: 2 }}>
-            <FormLabel component="legend">Gym Option</FormLabel>
-            <RadioGroup name="gymAction" value={gymSetup.gymAction} onChange={handleGymChange} row>
-              <FormControlLabel value="none" control={<Radio />} label="No gym" />
-              <FormControlLabel value="join" control={<Radio />} label="Join existing gym" />
-              <FormControlLabel value="create" control={<Radio />} label="Create new gym" />
+          <FormControl component="fieldset" error={!!errors.athleteAction} sx={{ mb: 2 }}>
+            <FormLabel component="legend">Athlete Status</FormLabel>
+            <RadioGroup name="athleteAction" value={athleteSetup.athleteAction} onChange={handleAthleteChange}>
+              <FormControlLabel value="freelance" control={<Radio />} label="Freelance" />
+              <FormControlLabel value="gym_member" control={<Radio />} label="Belong to a gym" />
             </RadioGroup>
-            {errors.gymAction && <FormHelperText>{errors.gymAction}</FormHelperText>}
+            {errors.athleteAction && <FormHelperText>{errors.athleteAction}</FormHelperText>}
           </FormControl>
 
-          {gymSetup.gymAction === 'join' && (
-            <CustomFormControl fullWidth error={!!errors.gymCode}>
-              <InputLabel htmlFor="reg-gymcode">Gym Code</InputLabel>
-              <OutlinedInput id="reg-gymcode" name="gymCode" value={gymSetup.gymCode} onChange={handleGymChange} label="Gym Code" placeholder="e.g. GYM-X7B9Q" />
-              {errors.gymCode && <FormHelperText>{errors.gymCode}</FormHelperText>}
-            </CustomFormControl>
+          {athleteSetup.athleteAction === 'freelance' && (
+            <FileUploadZone
+              files={athleteFiles}
+              onFilesChange={setAthleteFiles}
+              label="Athlete Documents"
+              description="Upload certifications, ID, or any supporting documents (optional)"
+            />
           )}
 
-          {gymSetup.gymAction === 'create' && (
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12 }}>
-                <CustomFormControl fullWidth error={!!errors.gymName}>
-                  <InputLabel htmlFor="reg-gymname">Gym Name</InputLabel>
-                  <OutlinedInput id="reg-gymname" name="gymName" value={gymSetup.gymName} onChange={handleGymChange} label="Gym Name" />
-                  {errors.gymName && <FormHelperText>{errors.gymName}</FormHelperText>}
-                </CustomFormControl>
-              </Grid>
-              <Grid size={{ xs: 12 }}>
-                <CustomFormControl fullWidth error={!!errors.gymAddress}>
-                  <InputLabel htmlFor="reg-gymaddress">Gym Address</InputLabel>
-                  <OutlinedInput id="reg-gymaddress" name="gymAddress" value={gymSetup.gymAddress} onChange={handleGymChange} label="Gym Address" />
-                  {errors.gymAddress && <FormHelperText>{errors.gymAddress}</FormHelperText>}
-                </CustomFormControl>
-              </Grid>
-            </Grid>
+          {athleteSetup.athleteAction === 'gym_member' && (
+            <CustomFormControl fullWidth error={!!errors.userCode}>
+              <InputLabel htmlFor="reg-usercode">User Code (optional)</InputLabel>
+              <OutlinedInput
+                id="reg-usercode"
+                name="userCode"
+                value={athleteSetup.userCode}
+                onChange={handleAthleteChange}
+                label="User Code (optional)"
+                placeholder="Code assigned by your gym"
+              />
+              {errors.userCode && <FormHelperText>{errors.userCode}</FormHelperText>}
+            </CustomFormControl>
           )}
         </>
       )}
 
-      {/* â”€â”€ Navigation Buttons â”€â”€ */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Last step: Gym Setup                                                 */}
+      {/* ------------------------------------------------------------------ */}
+      {isLastStep && (
+        <>
+          <FormControl component="fieldset" error={!!errors.gymAction} sx={{ mb: 2 }}>
+            <FormLabel component="legend">Gym</FormLabel>
+            <RadioGroup name="gymAction" value={gymSetup.gymAction} onChange={handleGymChange}>
+              <FormControlLabel value="create" control={<Radio />} label="New gym" />
+              <FormControlLabel value="join" control={<Radio />} label="Belong to existing gym" />
+            </RadioGroup>
+            {errors.gymAction && <FormHelperText>{errors.gymAction}</FormHelperText>}
+          </FormControl>
+
+          {gymSetup.gymAction === 'create' && (
+            <>
+              <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <CustomFormControl fullWidth error={!!errors.gymName}>
+                    <InputLabel htmlFor="reg-gymname">Gym Name</InputLabel>
+                    <OutlinedInput id="reg-gymname" name="gymName" value={gymSetup.gymName} onChange={handleGymChange} label="Gym Name" />
+                    {errors.gymName && <FormHelperText>{errors.gymName}</FormHelperText>}
+                  </CustomFormControl>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <CustomFormControl fullWidth error={!!errors.gymCode}>
+                    <InputLabel htmlFor="reg-gymcode-new">Gym Code</InputLabel>
+                    <OutlinedInput id="reg-gymcode-new" name="gymCode" value={gymSetup.gymCode} onChange={handleGymChange} label="Gym Code" placeholder="e.g. GYM-X7B9Q" />
+                    {errors.gymCode && <FormHelperText>{errors.gymCode}</FormHelperText>}
+                  </CustomFormControl>
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <CustomFormControl fullWidth error={!!errors.gymAddress}>
+                    <InputLabel htmlFor="reg-gymaddress">Gym Address (optional)</InputLabel>
+                    <OutlinedInput id="reg-gymaddress" name="gymAddress" value={gymSetup.gymAddress} onChange={handleGymChange} label="Gym Address (optional)" />
+                    {errors.gymAddress && <FormHelperText>{errors.gymAddress}</FormHelperText>}
+                  </CustomFormControl>
+                </Grid>
+              </Grid>
+              <FileUploadZone
+                files={gymFiles}
+                onFilesChange={setGymFiles}
+                label="Gym Documents"
+                description="Upload gym registration, license, or certification documents (optional)"
+              />
+            </>
+          )}
+
+          {gymSetup.gymAction === 'join' && (
+            <CustomFormControl fullWidth error={!!errors.gymCode}>
+              <InputLabel htmlFor="reg-gymcode-join">Gym Code</InputLabel>
+              <OutlinedInput
+                id="reg-gymcode-join"
+                name="gymCode"
+                value={gymSetup.gymCode}
+                onChange={handleGymChange}
+                label="Gym Code"
+                placeholder="Enter the gym's code"
+              />
+              {errors.gymCode && <FormHelperText>{errors.gymCode}</FormHelperText>}
+            </CustomFormControl>
+          )}
+        </>
+      )}
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Navigation                                                           */}
+      {/* ------------------------------------------------------------------ */}
       <Stack direction="row" sx={{ justifyContent: step === 0 ? 'flex-end' : 'space-between', mt: 3 }}>
-        {step === 1 && (
+        {step > 0 && (
           <Button onClick={handleBack} disabled={isLoading} variant="outlined" color="secondary">
             Back
           </Button>
         )}
         <AnimateButton>
           <Button disableElevation size="large" type="submit" variant="contained" color="secondary" disabled={isLoading}>
-            {isLoading ? <CircularProgress size={24} color="inherit" /> : step === 0 ? 'Next' : 'Sign up'}
+            {isLoading ? <CircularProgress size={24} color="inherit" /> : isLastStep ? 'Sign up' : 'Next'}
           </Button>
         </AnimateButton>
       </Stack>
     </Box>
   );
 }
-

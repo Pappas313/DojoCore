@@ -44,7 +44,22 @@ export async function logoutApi() {
  *   newGym: { name, address } | null
  * }
  */
-export async function registerApi(payload) {
+export async function registerApi(payload, files = {}) {
+  const hasFiles = (files.athleteDocuments?.length > 0) || (files.gymDocuments?.length > 0);
+
+  if (hasFiles) {
+    const form = new FormData();
+    form.append('data', JSON.stringify(payload));
+    (files.athleteDocuments || []).forEach((f) => form.append('athleteDocuments', f));
+    (files.gymDocuments || []).forEach((f) => form.append('gymDocuments', f));
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      credentials: 'include',
+      body: form
+    });
+    return handleResponse(response);
+  }
+
   const response = await fetch('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
