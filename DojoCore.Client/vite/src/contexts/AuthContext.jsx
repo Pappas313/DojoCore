@@ -16,7 +16,7 @@ export function AuthProvider({ children }) {
     setIsLoading(true);
     try {
       const data = await loginApi(credentials);
-      setUser(data);
+      setUser(data.user ?? data);
     } finally {
       setIsLoading(false);
     }
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
     setIsLoading(true);
     try {
       const data = await registerApi(userData, files);
-      setUser(data);
+      setUser(data.user ?? data);
     } finally {
       setIsLoading(false);
     }

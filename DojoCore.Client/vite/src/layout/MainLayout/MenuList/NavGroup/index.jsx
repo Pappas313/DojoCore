@@ -12,11 +12,13 @@ import NavCollapse from '../NavCollapse';
 import NavItem from '../NavItem';
 
 import { useGetMenuMaster } from 'api/menu';
+import { useTranslation } from 'react-i18next';
 
 // ==============================|| SIDEBAR MENU LIST GROUP ||============================== //
 
 export default function NavGroup({ item, lastItem, remItems, lastItemId, setSelectedID }) {
   const { pathname } = useLocation();
+  const { t } = useTranslation('common');
 
   const { menuMaster } = useGetMenuMaster();
   const drawerOpen = menuMaster.isDashboardDrawerOpened;
@@ -112,7 +114,7 @@ export default function NavGroup({ item, lastItem, remItems, lastItemId, setSele
                 marginTop: 1.25
               }}
             >
-              {currentItem.title}
+              {t(currentItem.title, currentItem.title)}
               {currentItem.caption && (
                 <Typography
                   gutterBottom
@@ -125,7 +127,7 @@ export default function NavGroup({ item, lastItem, remItems, lastItemId, setSele
                     lineHeight: 1.66
                   }}
                 >
-                  {currentItem.caption}
+                  {t(currentItem.caption, currentItem.caption)}
                 </Typography>
               )}
             </Typography>

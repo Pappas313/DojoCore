@@ -30,6 +30,7 @@ const GymMembershipsPage = Loadable(lazy(() => import('views/gyms/GymMemberships
 
 // admin routing
 const MenuManagePage = Loadable(lazy(() => import('views/menu/MenuManagePage')));
+const TranslationsPage = Loadable(lazy(() => import('views/admin/TranslationsPage')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -106,6 +107,10 @@ const MainRoutes = {
         {
           path: 'menu',
           element: <MenuManagePage />
+        },
+        {
+          path: 'translations',
+          element: <TranslationsPage />
         }
       ]
     }

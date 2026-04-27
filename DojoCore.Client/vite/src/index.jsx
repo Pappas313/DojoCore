@@ -1,5 +1,8 @@
 import { createRoot } from 'react-dom/client';
 
+// i18n – must be imported before the app so translations are ready
+import './i18n';
+
 // project imports
 import App from 'App';
 import * as serviceWorker from 'serviceWorker';

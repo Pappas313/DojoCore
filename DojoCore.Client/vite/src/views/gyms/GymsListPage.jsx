@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // material-ui
 import Alert from '@mui/material/Alert';
@@ -54,6 +55,7 @@ const EMPTY_FORM = { name: '', address: '', status: 1 };
 // ── Custom Toolbar ────────────────────────────────────────────────────────────
 
 function Toolbar({ onAdd }) {
+  const { t } = useTranslation('common');
   return (
     <GridToolbarContainer sx={{ px: 2, py: 1, gap: 1, justifyContent: 'space-between' }}>
       <Stack direction="row" sx={{ gap: 1 }}>
@@ -63,7 +65,7 @@ function Toolbar({ onAdd }) {
       <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
         <GridToolbarQuickFilter debounceMs={300} />
         <Button variant="contained" size="small" startIcon={<IconPlus size={16} />} onClick={onAdd}>
-          Add Gym
+          {t('Add Gym', 'Add Gym')}
         </Button>
       </Stack>
     </GridToolbarContainer>
@@ -73,6 +75,7 @@ function Toolbar({ onAdd }) {
 // ── Gym Form Dialog (Create / Edit) ───────────────────────────────────────────
 
 function GymFormDialog({ gym, onClose, onSaved }) {
+  const { t } = useTranslation('common');
   const isEdit = Boolean(gym?.id);
   const [form, setForm] = useState(
     isEdit
@@ -100,7 +103,7 @@ function GymFormDialog({ gym, onClose, onSaved }) {
       onSaved(result, isEdit);
       onClose();
     } catch (err) {
-      setFormError(err.message || 'Failed to save gym.');
+      setFormError(err.message || t('Failed to save gym.', 'Failed to save gym.'));
     } finally {
       setSaving(false);
     }
@@ -109,14 +112,14 @@ function GymFormDialog({ gym, onClose, onSaved }) {
   return (
     <Dialog open onClose={onClose} maxWidth="sm" fullWidth>
       <form onSubmit={handleSubmit}>
-        <DialogTitle>{isEdit ? 'Edit Gym' : 'New Gym'}</DialogTitle>
+        <DialogTitle>{isEdit ? t('Edit Gym', 'Edit Gym') : t('New Gym', 'New Gym')}</DialogTitle>
         <Divider />
         <DialogContent>
           {formError && <Alert severity="error" sx={{ mb: 2 }}>{formError}</Alert>}
           <Grid container spacing={2} sx={{ mt: 0.5 }}>
             <Grid size={{ xs: 12, sm: 8 }}>
               <TextField
-                label="Gym Name"
+                label={t('Gym Name', 'Gym Name')}
                 name="name"
                 value={form.name}
                 onChange={handleChange}
@@ -127,7 +130,7 @@ function GymFormDialog({ gym, onClose, onSaved }) {
             </Grid>
             <Grid size={{ xs: 12, sm: 4 }}>
               <TextField
-                label="Status"
+                label={t('Status', 'Status')}
                 name="status"
                 select
                 value={form.status}
@@ -136,13 +139,13 @@ function GymFormDialog({ gym, onClose, onSaved }) {
                 size="small"
               >
                 {STATUS_OPTIONS.map((o) => (
-                  <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>
+                  <MenuItem key={o.value} value={o.value}>{t(o.label, o.label)}</MenuItem>
                 ))}
               </TextField>
             </Grid>
             <Grid size={{ xs: 12 }}>
               <TextField
-                label="Address"
+                label={t('Address', 'Address')}
                 name="address"
                 value={form.address}
                 onChange={handleChange}
@@ -155,9 +158,9 @@ function GymFormDialog({ gym, onClose, onSaved }) {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} disabled={saving}>Cancel</Button>
+          <Button onClick={onClose} disabled={saving}>{t('Cancel', 'Cancel')}</Button>
           <Button type="submit" variant="contained" disabled={saving}>
-            {saving ? <CircularProgress size={20} color="inherit" /> : (isEdit ? 'Save Changes' : 'Create')}
+            {saving ? <CircularProgress size={20} color="inherit" /> : (isEdit ? t('Save Changes', 'Save Changes') : t('Create', 'Create'))}
           </Button>
         </DialogActions>
       </form>
@@ -168,19 +171,20 @@ function GymFormDialog({ gym, onClose, onSaved }) {
 // ── Delete Confirm ────────────────────────────────────────────────────────────
 
 function DeleteConfirmDialog({ gym, onClose, onConfirm, loading }) {
+  const { t } = useTranslation('common');
   if (!gym) return null;
   return (
     <Dialog open onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>Delete Gym</DialogTitle>
+      <DialogTitle>{t('Delete Gym', 'Delete Gym')}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Are you sure you want to delete <strong>{gym.name}</strong>? This action cannot be undone.
+          {t('Are you sure you want to delete {{name}}? This action cannot be undone.', 'Are you sure you want to delete {{name}}? This action cannot be undone.', { name: gym.name })}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={loading}>Cancel</Button>
+        <Button onClick={onClose} disabled={loading}>{t('Cancel', 'Cancel')}</Button>
         <Button onClick={onConfirm} color="error" variant="contained" disabled={loading}>
-          {loading ? <CircularProgress size={20} color="inherit" /> : 'Delete'}
+          {loading ? <CircularProgress size={20} color="inherit" /> : t('Delete', 'Delete')}
         </Button>
       </DialogActions>
     </Dialog>
@@ -190,6 +194,7 @@ function DeleteConfirmDialog({ gym, onClose, onConfirm, loading }) {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default function GymsListPage() {
+  const { t } = useTranslation('common');
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -205,7 +210,7 @@ export default function GymsListPage() {
       const data = await getGyms();
       setRows(Array.isArray(data) ? data : (data?.items ?? data?.data ?? []));
     } catch (err) {
-      setError(err.message || 'Failed to load gyms.');
+      setError(err.message || t('Failed to load gyms.', 'Failed to load gyms.'));
     } finally {
       setLoading(false);
     }
@@ -233,7 +238,7 @@ export default function GymsListPage() {
       setRows((prev) => prev.filter((r) => r.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (err) {
-      setError(err.message || 'Failed to delete gym.');
+      setError(err.message || t('Failed to delete gym.', 'Failed to delete gym.'));
     } finally {
       setDeleteLoading(false);
     }
@@ -242,53 +247,53 @@ export default function GymsListPage() {
   const columns = [
     {
       field: 'name',
-      headerName: 'Name',
+      headerName: t('Name', 'Name'),
       flex: 1,
       minWidth: 180,
       type: 'string'
     },
     {
       field: 'gymCode',
-      headerName: 'Code',
+      headerName: t('Code', 'Code'),
       width: 130,
       type: 'string',
       valueGetter: (value, row) => value ?? row.gym_code ?? '—'
     },
     {
       field: 'address',
-      headerName: 'Address',
+      headerName: t('Address', 'Address'),
       flex: 1.5,
       minWidth: 200,
       type: 'string'
     },
     {
       field: 'status',
-      headerName: 'Status',
+      headerName: t('Status', 'Status'),
       width: 140,
       type: 'singleSelect',
       valueOptions: STATUS_OPTIONS,
       getOptionValue: (o) => o.value,
-      getOptionLabel: (o) => o.label,
+      getOptionLabel: (o) => t(o.label, o.label),
       renderCell: ({ value }) => {
         const s = STATUS_MAP[value] ?? { label: 'Unknown', color: 'default' };
-        return <Chip label={s.label} color={s.color} size="small" />;
+        return <Chip label={t(s.label, s.label)} color={s.color} size="small" />;
       }
     },
     {
       field: 'actions',
-      headerName: 'Actions',
+      headerName: t('Actions', 'Actions'),
       width: 110,
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
       renderCell: ({ row }) => (
         <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-          <Tooltip title="Edit">
+          <Tooltip title={t('Edit', 'Edit')}>
             <IconButton size="small" color="primary" onClick={() => openEdit(row)}>
               <IconPencil size={18} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete">
+          <Tooltip title={t('Delete', 'Delete')}>
             <IconButton size="small" color="error" onClick={() => setDeleteTarget(row)}>
               <IconTrash size={18} />
             </IconButton>
@@ -303,7 +308,7 @@ export default function GymsListPage() {
       title={
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
           <IconBuildingStore size={22} />
-          <Typography variant="h3">Gyms</Typography>
+          <Typography variant="h3">{t('Gyms', 'Gyms')}</Typography>
         </Stack>
       }
     >

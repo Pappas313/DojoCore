@@ -23,6 +23,7 @@ import Transitions from 'ui-component/extended/Transitions';
 import { useGetMenuMaster } from 'api/menu';
 import useConfig from 'hooks/useConfig';
 import useMenuCollapse from 'hooks/useMenuCollapse';
+import { useTranslation } from 'react-i18next';
 
 // assets
 import { IconChevronDown, IconChevronRight, IconChevronUp } from '@tabler/icons-react';
@@ -31,6 +32,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 export default function NavCollapse({ menu, level, parentId }) {
   const theme = useTheme();
   const ref = useRef(null);
+  const { t } = useTranslation('common');
 
   const {
     state: { borderRadius }
@@ -177,7 +179,7 @@ export default function NavCollapse({ menu, level, parentId }) {
           </ListItemIcon>
         </Activity>
         {(drawerOpen || (!drawerOpen && level !== 1)) && (
-          <Tooltip title={menu.title} disableHoverListener={!hoverStatus}>
+          <Tooltip title={t(menu.title, menu.title)} disableHoverListener={!hoverStatus}>
             <ListItemText
               primary={
                 <Typography
@@ -191,7 +193,7 @@ export default function NavCollapse({ menu, level, parentId }) {
                     width: 120
                   }}
                 >
-                  {menu.title}
+                  {t(menu.title, menu.title)}
                   {menu.pageCode && (
                     <Box
                       component="span"

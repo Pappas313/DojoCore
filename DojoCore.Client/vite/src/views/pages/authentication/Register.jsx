@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Divider from '@mui/material/Divider';
@@ -16,6 +17,7 @@ import AuthRegister from '../auth-forms/AuthRegister';
 
 export default function Register() {
   const downMD = useMediaQuery((theme) => theme.breakpoints.down('md'));
+  const { t } = useTranslation('common');
 
   return (
     <AuthWrapper1>
@@ -31,10 +33,10 @@ export default function Register() {
                 </Box>
                 <Stack sx={{ alignItems: 'center', justifyContent: 'center', gap: 1 }}>
                   <Typography gutterBottom variant={downMD ? 'h3' : 'h2'} sx={{ color: 'secondary.main', mb: 0 }}>
-                    Sign up
+                    {t('Sign up', 'Sign up')}
                   </Typography>
                   <Typography variant="caption" sx={{ fontSize: '16px', textAlign: { xs: 'center', md: 'inherit' } }}>
-                    Enter your details to continue
+                    {t('Enter your details to continue', 'Enter your details to continue')}
                   </Typography>
                 </Stack>
                 <Box>
@@ -43,7 +45,7 @@ export default function Register() {
                 <Divider sx={{ width: 1 }} />
                 <Stack sx={{ alignItems: 'center' }}>
                   <Typography component={Link} to="/pages/login" variant="subtitle1" sx={{ textDecoration: 'none' }}>
-                    Already have an account?
+                    {t('Already have an account?', 'Already have an account?')}
                   </Typography>
                 </Stack>
               </Stack>

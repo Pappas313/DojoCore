@@ -1,4 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // material-ui
 import Alert from '@mui/material/Alert';
@@ -113,6 +114,7 @@ function collectDescendantIds(flatRows, itemId) {
 // ── Inline Form Panel ─────────────────────────────────────────────────────────
 
 function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
+  const { t } = useTranslation('common');
   const isEdit = !isNew && editTarget !== null;
 
   const [form, setForm] = useState(() =>
@@ -153,11 +155,11 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!form.title.trim()) {
-      setFormError('Title is required.');
+      setFormError(t('Title is required.', 'Title is required.'));
       return;
     }
     if (!form.pageCode.trim()) {
-      setFormError('Page Code is required.');
+      setFormError(t('Page Code is required.', 'Page Code is required.'));
       return;
     }
     setSaving(true);
@@ -176,7 +178,7 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
         : await createMenuItem(payload);
       onSaved(result);
     } catch (err) {
-      setFormError(err.message || 'Failed to save menu item.');
+      setFormError(err.message || t('Failed to save menu item.', 'Failed to save menu item.'));
       setSaving(false);
     }
   }
@@ -185,7 +187,7 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
     <Box sx={{ p: 2.5, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.800' : 'grey.50', borderTop: '2px solid', borderColor: 'primary.main' }}>
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
         <Typography variant="h5" color="primary">
-          {isEdit ? `Edit: ${editTarget.title}` : 'New Menu Item'}
+          {isEdit ? t('Edit: {{title}}', 'Edit: {{title}}', { title: editTarget.title }) : t('New Menu Item', 'New Menu Item')}
         </Typography>
         <IconButton size="small" onClick={onClose} aria-label="Close form">
           <IconX size={18} />
@@ -202,7 +204,7 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 inputRef={titleRef}
-                label="Title"
+                label={t('Title', 'Title')}
                 name="title"
                 value={form.title}
                 onChange={handleChange}
@@ -213,7 +215,7 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="Page Code"
+                label={t('Page Code', 'Page Code')}
                 name="pageCode"
                 value={form.pageCode}
                 onChange={handleChange}
@@ -226,7 +228,7 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
             {/* Row 2 */}
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="URL"
+                label={t('URL', 'URL')}
                 name="url"
                 value={form.url}
                 onChange={handleChange}
@@ -237,7 +239,7 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="Icon"
+                label={t('Icon', 'Icon')}
                 name="icon"
                 value={form.icon}
                 onChange={handleChange}
@@ -259,7 +261,7 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
             {/* Row 3 */}
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="Order Index"
+                label={t('Order Index', 'Order Index')}
                 name="orderIndex"
                 type="number"
                 value={form.orderIndex}
@@ -271,7 +273,7 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="Parent Item"
+                label={t('Parent Item', 'Parent Item')}
                 name="parentId"
                 value={form.parentId}
                 onChange={handleChange}
@@ -280,7 +282,7 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
                 select
               >
                 <MenuItem value="">
-                  <em>— No parent (top-level group) —</em>
+                  <em>{t('— No parent (top-level group) —', '— No parent (top-level group) —')}</em>
                 </MenuItem>
                 {parentOptions.map((item) => (
                   <MenuItem key={item.id} value={item.id}>
@@ -295,15 +297,15 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
 
           <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ mt: 2 }}>
             <Button onClick={onClose} disabled={saving}>
-              Cancel
+              {t('Cancel', 'Cancel')}
             </Button>
             <Button type="submit" variant="contained" disabled={saving}>
               {saving ? (
                 <CircularProgress size={20} color="inherit" />
               ) : isEdit ? (
-                'Save Changes'
+                t('Save Changes', 'Save Changes')
               ) : (
-                'Create'
+                t('Create', 'Create')
               )}
             </Button>
           </Stack>
@@ -315,19 +317,20 @@ function MenuItemFormPanel({ editTarget, isNew, flatRows, onClose, onSaved }) {
 // ── Delete Confirm Dialog ─────────────────────────────────────────────────────
 
 function DeleteConfirmDialog({ item, hasChildren, onClose, onConfirm, loading }) {
+  const { t } = useTranslation('common');
   if (!item) return null;
   return (
     <Dialog open onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>Delete Menu Item</DialogTitle>
+      <DialogTitle>{t('Delete Menu Item', 'Delete Menu Item')}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Are you sure you want to delete <strong>{item.title}</strong>?
+          {t('Are you sure you want to delete {{name}}? This action cannot be undone.', 'Are you sure you want to delete {{name}}? This action cannot be undone.', { name: item.title })}
           {hasChildren && (
             <>
               {' '}
               <br />
               <Typography component="span" color="error" variant="body2">
-                This will also delete all of its child items.
+                {t('This will also delete all of its child items.', 'This will also delete all of its child items.')}
               </Typography>
             </>
           )}
@@ -335,10 +338,10 @@ function DeleteConfirmDialog({ item, hasChildren, onClose, onConfirm, loading })
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} disabled={loading}>
-          Cancel
+          {t('Cancel', 'Cancel')}
         </Button>
         <Button onClick={onConfirm} color="error" variant="contained" disabled={loading}>
-          {loading ? <CircularProgress size={20} color="inherit" /> : 'Delete'}
+          {loading ? <CircularProgress size={20} color="inherit" /> : t('Delete', 'Delete')}
         </Button>
       </DialogActions>
     </Dialog>
@@ -348,6 +351,7 @@ function DeleteConfirmDialog({ item, hasChildren, onClose, onConfirm, loading })
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function MenuManagePage() {
+  const { t } = useTranslation('common');
   const [flatRows, setFlatRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -367,7 +371,7 @@ export default function MenuManagePage() {
       const items = Array.isArray(data) ? data : [];
       setFlatRows(flattenTree(items));
     } catch (err) {
-      setError(err.message || 'Failed to load menu items.');
+      setError(err.message || t('Failed to load menu items.', 'Failed to load menu items.'));
     } finally {
       setLoading(false);
     }
@@ -409,7 +413,7 @@ export default function MenuManagePage() {
       setDeleteTarget(null);
       await fetchMenu();
     } catch (err) {
-      setError(err.message || 'Failed to delete menu item.');
+      setError(err.message || t('Failed to delete menu item.', 'Failed to delete menu item.'));
     } finally {
       setDeleteLoading(false);
     }
@@ -436,7 +440,7 @@ export default function MenuManagePage() {
       title={
         <Stack direction="row" alignItems="center" spacing={1}>
           <IconMenu2 size={22} />
-          <span>Menu Management</span>
+          <span>{t('Menu Management', 'Menu Management')}</span>
         </Stack>
       }
     >
@@ -450,7 +454,7 @@ export default function MenuManagePage() {
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
         <TextField
           size="small"
-          placeholder="Search…"
+          placeholder={t('Search…', 'Search…')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           sx={{ width: 260 }}
@@ -463,7 +467,7 @@ export default function MenuManagePage() {
           }}
         />
         <Button variant="contained" size="small" startIcon={<IconPlus size={16} />} onClick={openCreate}>
-          Add Item
+          {t('Add Item', 'Add Item')}
         </Button>
       </Stack>
 
@@ -472,12 +476,12 @@ export default function MenuManagePage() {
         <Table size="small">
           <TableHead>
             <TableRow sx={{ bgcolor: 'grey.50' }}>
-              <TableCell sx={{ fontWeight: 600, width: '28%' }}>Title</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Page Code</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>URL</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Icon</TableCell>
-              <TableCell sx={{ fontWeight: 600, width: 70, textAlign: 'center' }}>Order</TableCell>
-              <TableCell sx={{ fontWeight: 600, width: 100 }}>Actions</TableCell>
+              <TableCell sx={{ fontWeight: 600, width: '28%' }}>{t('Title', 'Title')}</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>{t('Page Code', 'Page Code')}</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>{t('URL', 'URL')}</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>{t('Icon', 'Icon')}</TableCell>
+              <TableCell sx={{ fontWeight: 600, width: 70, textAlign: 'center' }}>{t('Order', 'Order')}</TableCell>
+              <TableCell sx={{ fontWeight: 600, width: 100 }}>{t('Actions', 'Actions')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -492,7 +496,7 @@ export default function MenuManagePage() {
             {!loading && filteredRows.length === 0 && (
               <TableRow>
                 <TableCell colSpan={COL_COUNT} align="center" sx={{ py: 4, color: 'text.secondary' }}>
-                  No menu items found.
+                  {t('No menu items found.', 'No menu items found.')}
                 </TableCell>
               </TableRow>
             )}
@@ -529,12 +533,12 @@ export default function MenuManagePage() {
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={0.5}>
-                        <Tooltip title="Edit">
+                        <Tooltip title={t('Edit', 'Edit')}>
                           <IconButton size="small" onClick={() => openEdit(row)} color={isEditing ? 'primary' : 'default'}>
                             <IconPencil size={16} />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="Delete">
+                        <Tooltip title={t('Delete', 'Delete')}>
                           <IconButton size="small" color="error" onClick={() => setDeleteTarget(row)}>
                             <IconTrash size={16} />
                           </IconButton>

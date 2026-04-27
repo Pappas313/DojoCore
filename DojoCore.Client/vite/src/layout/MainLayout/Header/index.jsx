@@ -9,6 +9,7 @@ import LogoSection from '../LogoSection';
 import SearchSection from './SearchSection';
 import ProfileSection from './ProfileSection';
 import NotificationSection from './NotificationSection';
+import LanguageSwitcher from './LanguageSwitcher';
 
 import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 
@@ -55,6 +56,9 @@ export default function Header() {
       <SearchSection />
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
+
+      {/* language */}
+      <LanguageSwitcher />
 
       {/* notification */}
       <NotificationSection />

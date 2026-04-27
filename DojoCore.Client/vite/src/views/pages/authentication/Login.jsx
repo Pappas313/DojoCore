@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Divider from '@mui/material/Divider';
@@ -18,6 +19,7 @@ import AuthLogin from '../auth-forms/AuthLogin';
 
 export default function Login() {
   const downMD = useMediaQuery((theme) => theme.breakpoints.down('md'));
+  const { t } = useTranslation('common');
 
   return (
     <AuthWrapper1>
@@ -33,10 +35,10 @@ export default function Login() {
                 </Box>
                 <Stack sx={{ alignItems: 'center', justifyContent: 'center', gap: 1 }}>
                   <Typography variant={downMD ? 'h3' : 'h2'} sx={{ color: 'secondary.main' }}>
-                    Hi, Welcome Back
+                    {t('Hi, Welcome Back', 'Hi, Welcome Back')}
                   </Typography>
                   <Typography variant="caption" sx={{ fontSize: '16px', textAlign: { xs: 'center', md: 'inherit' } }}>
-                    Enter your credentials to continue
+                    {t('Enter your credentials to continue', 'Enter your credentials to continue')}
                   </Typography>
                 </Stack>
                 <Box sx={{ width: 1 }}>
@@ -45,7 +47,7 @@ export default function Login() {
                 <Divider sx={{ width: 1 }} />
                 <Stack sx={{ alignItems: 'center' }}>
                   <Typography component={Link} to="/pages/register" variant="subtitle1" sx={{ textDecoration: 'none' }}>
-                    Don&apos;t have an account?
+                    {t("Don't have an account?", "Don't have an account?")}
                   </Typography>
                 </Stack>
               </Stack>

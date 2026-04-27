@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // material-ui
 import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { enUS as dataGridEnUS, elGR as dataGridElGR } from '@mui/x-data-grid/locales';
 
 // project imports
 import { CSS_VAR_PREFIX, DEFAULT_THEME_MODE } from 'config';
@@ -19,6 +21,9 @@ export default function ThemeCustomization({ children }) {
   const {
     state: { borderRadius, fontFamily, outlinedFilled, presetColor }
   } = useConfig();
+
+  const { i18n } = useTranslation('common');
+  const dataGridLocale = (i18n.resolvedLanguage ?? i18n.language) === 'gr' ? dataGridElGR : dataGridEnUS;
 
   const palette = useMemo(() => buildPalette(presetColor), [presetColor]);
 
@@ -55,7 +60,7 @@ export default function ThemeCustomization({ children }) {
     [themeTypography, palette]
   );
 
-  const themes = createTheme(themeOptions);
+  const themes = createTheme(themeOptions, dataGridLocale);
   themes.components = useMemo(() => componentsOverrides(themes, borderRadius, outlinedFilled), [themes, borderRadius, outlinedFilled]);
 
   return (

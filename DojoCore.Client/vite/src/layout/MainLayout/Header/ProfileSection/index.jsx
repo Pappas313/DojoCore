@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // material-ui
 import { useTheme, useColorScheme } from '@mui/material/styles';
@@ -30,13 +31,14 @@ import { IconLogout, IconMoon, IconSettings, IconSun, IconUser } from '@tabler/i
 
 // ==============================|| PROFILE MENU ||============================== //
 
-const ROLE_LABELS = { 1: 'Admin', 2: 'Manager', 3: 'Athlete' };
+const ROLE_LABELS = { 0: 'Admin', 1: 'Manager', 2: 'Coach', 3: 'Athlete' };
 const roleLabel = (role) => ROLE_LABELS[role] ?? `Role ${role}`;
 
 export default function ProfileSection() {
   const theme = useTheme();
   const navigate = useNavigate();
   const { logout, user } = useAuth();
+  const { t } = useTranslation('common');
   const { mode, setMode } = useColorScheme();
   const {
     state: { borderRadius }
@@ -125,7 +127,7 @@ export default function ProfileSection() {
                     <Box sx={{ p: 2, pb: 0 }}>
                       <Stack>
                         <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-                          <Typography variant="h4">Good Morning,</Typography>
+                          <Typography variant="h4">{t('profile.greeting', 'Good Morning,')}</Typography>
                           <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
                             {user?.username || user?.email || 'User'}
                           </Typography>
@@ -158,26 +160,26 @@ export default function ProfileSection() {
                           <ListItemIcon>
                             <IconSettings stroke={1.5} size="20px" />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Account Settings</Typography>} />
+                          <ListItemText primary={<Typography variant="body2">{t('profile.accountSettings', 'Account Settings')}</Typography>} />
                         </ListItemButton>
                         <ListItemButton sx={{ borderRadius: `${borderRadius}px` }}>
                           <ListItemIcon>
                             <IconUser stroke={1.5} size="20px" />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Profile</Typography>} />
+                          <ListItemText primary={<Typography variant="body2">{t('profile.profile', 'Profile')}</Typography>} />
                         </ListItemButton>
                         <ListItemButton sx={{ borderRadius: `${borderRadius}px` }} onClick={() => setMode(isDark ? 'light' : 'dark')}>
                           <ListItemIcon>
                             {isDark ? <IconSun stroke={1.5} size="20px" /> : <IconMoon stroke={1.5} size="20px" />}
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">{isDark ? 'Light Mode' : 'Dark Mode'}</Typography>} />
+                          <ListItemText primary={<Typography variant="body2">{isDark ? t('profile.lightMode', 'Light Mode') : t('profile.darkMode', 'Dark Mode')}</Typography>} />
                           <Switch checked={isDark} onChange={() => setMode(isDark ? 'light' : 'dark')} size="small" color="primary" onClick={(e) => e.stopPropagation()} />
                         </ListItemButton>
                         <ListItemButton sx={{ borderRadius: `${borderRadius}px` }} onClick={handleLogout}>
                           <ListItemIcon>
                             <IconLogout stroke={1.5} size="20px" />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Logout</Typography>} />
+                          <ListItemText primary={<Typography variant="body2">{t('profile.logout', 'Logout')}</Typography>} />
                         </ListItemButton>
                       </List>
                     </Box>

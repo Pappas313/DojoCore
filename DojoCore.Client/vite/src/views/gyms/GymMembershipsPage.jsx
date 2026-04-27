@@ -1,4 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // material-ui
 import Alert from '@mui/material/Alert';
@@ -55,6 +56,7 @@ function matchesTerm(str = '', term = '') {
 // ── Toolbar ───────────────────────────────────────────────────────────────────
 
 function Toolbar({ search, onSearch, onExpandAll, onCollapseAll }) {
+  const { t } = useTranslation('common');
   return (
     <Stack
       direction="row"
@@ -62,12 +64,12 @@ function Toolbar({ search, onSearch, onExpandAll, onCollapseAll }) {
             borderBottom: '1px solid', borderColor: 'divider' }}
     >
       <Stack direction="row" sx={{ gap: 1 }}>
-        <Button size="small" variant="outlined" onClick={onExpandAll}>Expand All</Button>
-        <Button size="small" variant="outlined" onClick={onCollapseAll}>Collapse All</Button>
+        <Button size="small" variant="outlined" onClick={onExpandAll}>{t('Expand All', 'Expand All')}</Button>
+        <Button size="small" variant="outlined" onClick={onCollapseAll}>{t('Collapse All', 'Collapse All')}</Button>
       </Stack>
       <TextField
         size="small"
-        placeholder="Search gyms or members…"
+        placeholder={t('Search gyms or members…', 'Search gyms or members…')}
         value={search}
         onChange={(e) => onSearch(e.target.value)}
         sx={{ minWidth: 240 }}
@@ -86,6 +88,7 @@ function Toolbar({ search, onSearch, onExpandAll, onCollapseAll }) {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default function GymMembershipsPage() {
+  const { t } = useTranslation('common');
   const [gyms, setGyms]         = useState([]);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState('');
@@ -154,7 +157,7 @@ export default function GymMembershipsPage() {
       title={
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
           <IconUsers size={22} />
-          <Typography variant="h3">Gym Memberships</Typography>
+          <Typography variant="h3">{t('Gym Memberships', 'Gym Memberships')}</Typography>
           {!loading && (
             <Chip label={`${gyms.length} gyms · ${totalMembers} members`} size="small" variant="outlined" />
           )}
@@ -180,8 +183,8 @@ export default function GymMembershipsPage() {
           borderRadius: '8px 8px 0 0'
         }}
       >
-        <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>Grouped by:</Typography>
-        <Chip label="Gym" size="small" icon={<IconBuildingStore size={13} />} color="primary" variant="outlined" />
+        <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>{t('Grouped by:', 'Grouped by:')}</Typography>
+        <Chip label={t('Gym', 'Gym')} size="small" icon={<IconBuildingStore size={13} />} color="primary" variant="outlined" />
       </Box>
 
       <Paper variant="outlined" sx={{ borderRadius: '0 0 8px 8px', overflow: 'hidden' }}>
@@ -194,17 +197,17 @@ export default function GymMembershipsPage() {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 600, width: 120 }}>Role</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Username</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
-                  <TableCell sx={{ fontWeight: 600, width: 130 }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 600, width: 120 }}>{t('Role', 'Role')}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{t('Username', 'Username')}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{t('Email', 'Email')}</TableCell>
+                  <TableCell sx={{ fontWeight: 600, width: 130 }}>{t('Status', 'Status')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={COLS} sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
-                      {search ? 'No results match your search.' : 'No gyms found.'}
+                      {search ? t('No results match your search.', 'No results match your search.') : t('No gyms found.', 'No gyms found.')}
                     </TableCell>
                   </TableRow>
                 ) : filtered.map((gym) => {
@@ -238,7 +241,7 @@ export default function GymMembershipsPage() {
                             }
                             <IconBuildingStore size={16} style={{ flexShrink: 0 }} />
                             <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                              Gym: {gym.name ?? gym.gymName ?? '—'}
+                              {t('Gym: {{name}}', 'Gym: {{name}}', { name: gym.name ?? gym.gymName ?? '—' })}
                             </Typography>
                             {gym.gymCode && (
                               <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
@@ -246,10 +249,10 @@ export default function GymMembershipsPage() {
                               </Typography>
                             )}
                             <Box sx={{ ml: 'auto', display: 'flex', gap: 0.75 }}>
-                              {coaches.length  > 0 && <Chip label={`${coaches.length} coaches`}   size="small" color="primary"   variant="outlined" />}
-                              {managers.length > 0 && <Chip label={`${managers.length} managers`} size="small" color="secondary" variant="outlined" />}
-                              {athletes.length > 0 && <Chip label={`${athletes.length} athletes`} size="small" color="info"      variant="outlined" />}
-                              {allMembers.length === 0 && <Chip label="No members" size="small" variant="outlined" />}
+                              {coaches.length  > 0 && <Chip label={t('{{n}} coaches', '{{n}} coaches', { n: coaches.length })}   size="small" color="primary"   variant="outlined" />}
+                              {managers.length > 0 && <Chip label={t('{{n}} managers', '{{n}} managers', { n: managers.length })} size="small" color="secondary" variant="outlined" />}
+                              {athletes.length > 0 && <Chip label={t('{{n}} athletes', '{{n}} athletes', { n: athletes.length })} size="small" color="info"      variant="outlined" />}
+                              {allMembers.length === 0 && <Chip label={t('No members', 'No members')} size="small" variant="outlined" />}
                             </Box>
                           </Stack>
                         </TableCell>
@@ -261,7 +264,7 @@ export default function GymMembershipsPage() {
                         return (
                           <TableRow key={m._key} hover>
                             <TableCell sx={{ py: 0.75 }}>
-                              <Chip label={m._role} color={ROLE_COLOR[m._role] ?? 'default'} size="small" />
+                              <Chip label={t(m._role, m._role)} color={ROLE_COLOR[m._role] ?? 'default'} size="small" />
                             </TableCell>
                             <TableCell sx={{ py: 0.75 }}>
                               <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
@@ -275,7 +278,7 @@ export default function GymMembershipsPage() {
                               <Typography variant="body2" color="text.secondary">{m.email}</Typography>
                             </TableCell>
                             <TableCell sx={{ py: 0.75 }}>
-                              <Chip label={status.label} color={status.color} size="small" />
+                              <Chip label={t(status.label, status.label)} color={status.color} size="small" />
                             </TableCell>
                           </TableRow>
                         );

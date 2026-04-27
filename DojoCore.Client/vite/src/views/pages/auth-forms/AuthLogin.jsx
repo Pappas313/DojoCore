@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
+import { useTranslation } from 'react-i18next';
 
 // material-ui
 import Alert from '@mui/material/Alert';
@@ -36,6 +37,7 @@ const loginSchema = Yup.object({
 export default function AuthLogin() {
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
 
   const [values, setValues] = useState({ identifier: '', password: '' });
   const [errors, setErrors] = useState({});
@@ -71,7 +73,7 @@ export default function AuthLogin() {
       await login({ identifier: values.identifier, password: values.password });
       navigate(DASHBOARD_PATH);
     } catch (err) {
-      setServerError(err.message || 'Login failed. Please try again.');
+      setServerError(err.message || t('Login failed. Please try again.', 'Login failed. Please try again.'));
     }
   };
 
@@ -84,24 +86,24 @@ export default function AuthLogin() {
       )}
 
       <CustomFormControl fullWidth error={!!errors.email}>
-        <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
+        <InputLabel htmlFor="outlined-adornment-email-login">{t('Email Address / Username', 'Email Address / Username')}</InputLabel>
         <OutlinedInput
           id="outlined-adornment-email-login"
           type="text"
           value={values.identifier}
           name="identifier"
           onChange={handleChange}
-          label="Email Address / Username"
+          label={t('Email Address / Username', 'Email Address / Username')}
         />
         {errors.identifier && (
           <Typography variant="caption" color="error">
-            {errors.identifier}
+            {t(errors.identifier, errors.identifier)}
           </Typography>
         )}
       </CustomFormControl>
 
       <CustomFormControl fullWidth error={!!errors.password}>
-        <InputLabel htmlFor="outlined-adornment-password-login">Password</InputLabel>
+        <InputLabel htmlFor="outlined-adornment-password-login">{t('Password', 'Password')}</InputLabel>
         <OutlinedInput
           id="outlined-adornment-password-login"
           type={showPassword ? 'text' : 'password'}
@@ -121,11 +123,11 @@ export default function AuthLogin() {
               </IconButton>
             </InputAdornment>
           }
-          label="Password"
+          label={t('Password', 'Password')}
         />
         {errors.password && (
           <Typography variant="caption" color="error">
-            {errors.password}
+            {t(errors.password, errors.password)}
           </Typography>
         )}
       </CustomFormControl>
@@ -134,12 +136,12 @@ export default function AuthLogin() {
         <Grid>
           <FormControlLabel
             control={<Checkbox checked={checked} onChange={(e) => setChecked(e.target.checked)} name="checked" color="primary" />}
-            label="Keep me logged in"
+            label={t('Keep me logged in', 'Keep me logged in')}
           />
         </Grid>
         <Grid>
           <Typography variant="subtitle1" component={Link} to="#!" sx={{ textDecoration: 'none', color: 'secondary.main' }}>
-            Forgot Password?
+            {t('Forgot Password?', 'Forgot Password?')}
           </Typography>
         </Grid>
       </Grid>
@@ -147,7 +149,7 @@ export default function AuthLogin() {
       <Box sx={{ mt: 2 }}>
         <AnimateButton>
           <Button color="secondary" fullWidth size="large" type="submit" variant="contained" disabled={isLoading}>
-            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
+            {isLoading ? <CircularProgress size={24} color="inherit" /> : t('Sign In', 'Sign In')}
           </Button>
         </AnimateButton>
       </Box>

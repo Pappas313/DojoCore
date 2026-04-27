@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography';
 // project imports
 import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 import useConfig from 'hooks/useConfig';
+import { useTranslation } from 'react-i18next';
 
 // assets
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
@@ -26,6 +27,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
   const theme = useTheme();
   const downMD = useMediaQuery(theme.breakpoints.down('md'));
   const ref = useRef(null);
+  const { t } = useTranslation('common');
 
   const { pathname } = useLocation();
   const {
@@ -120,7 +122,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
         </ButtonBase>
 
         {(drawerOpen || (!drawerOpen && level !== 1)) && (
-          <Tooltip title={item.title} disableHoverListener={!hoverStatus}>
+          <Tooltip title={t(item.title, item.title)} disableHoverListener={!hoverStatus}>
             <ListItemText
               primary={
                 <Typography
@@ -134,7 +136,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
                     color: 'inherit'
                   }}
                 >
-                  {item.title}
+                  {t(item.title, item.title)}
                   {item.pageCode && (
                     <Box
                       component="span"
@@ -173,7 +175,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
                       lineHeight: 1.66
                     }}
                   >
-                    {item.caption}
+                    {t(item.caption, item.caption)}
                   </Typography>
                 )
               }

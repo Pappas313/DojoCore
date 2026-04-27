@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -62,6 +63,7 @@ function getInitials(username = '') {
 // ── Custom Toolbar ────────────────────────────────────────────────────────────
 
 function Toolbar({ onAdd }) {
+  const { t } = useTranslation('common');
   return (
     <GridToolbarContainer sx={{ px: 2, py: 1, gap: 1, justifyContent: 'space-between' }}>
       <Stack direction="row" sx={{ gap: 1 }}>
@@ -71,7 +73,7 @@ function Toolbar({ onAdd }) {
       <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
         <GridToolbarQuickFilter debounceMs={300} />
         <Button variant="contained" size="small" startIcon={<IconPlus size={16} />} onClick={onAdd}>
-          Add Coach
+          {t('Add Coach', 'Add Coach')}
         </Button>
       </Stack>
     </GridToolbarContainer>
@@ -81,6 +83,7 @@ function Toolbar({ onAdd }) {
 // ── Coach Form Dialog (Create / Edit) ─────────────────────────────────────────
 
 function CoachFormDialog({ coach, onClose, onSaved }) {
+  const { t } = useTranslation('common');
   const isEdit = Boolean(coach?.id);
   const [form, setForm] = useState(
     isEdit
@@ -114,7 +117,7 @@ function CoachFormDialog({ coach, onClose, onSaved }) {
       onSaved(result, isEdit);
       onClose();
     } catch (err) {
-      setFormError(err.message || 'Failed to save coach.');
+      setFormError(err.message || t('Failed to save coach.', 'Failed to save coach.'));
     } finally {
       setSaving(false);
     }
@@ -123,14 +126,14 @@ function CoachFormDialog({ coach, onClose, onSaved }) {
   return (
     <Dialog open onClose={onClose} maxWidth="sm" fullWidth>
       <form onSubmit={handleSubmit}>
-        <DialogTitle>{isEdit ? 'Edit Coach' : 'New Coach'}</DialogTitle>
+        <DialogTitle>{isEdit ? t('Edit Coach', 'Edit Coach') : t('New Coach', 'New Coach')}</DialogTitle>
         <Divider />
         <DialogContent>
           {formError && <Alert severity="error" sx={{ mb: 2 }}>{formError}</Alert>}
           <Grid container spacing={2} sx={{ mt: 0.5 }}>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="Username"
+                label={t('Username', 'Username')}
                 name="username"
                 value={form.username}
                 onChange={handleChange}
@@ -141,7 +144,7 @@ function CoachFormDialog({ coach, onClose, onSaved }) {
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="Email"
+                label={t('Email', 'Email')}
                 name="email"
                 type="email"
                 value={form.email}
@@ -153,7 +156,7 @@ function CoachFormDialog({ coach, onClose, onSaved }) {
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label={isEdit ? 'New Password (optional)' : 'Password'}
+                label={isEdit ? t('New Password (optional)', 'New Password (optional)') : t('Password', 'Password')}
                 name="password"
                 type="password"
                 value={form.password}
@@ -165,7 +168,7 @@ function CoachFormDialog({ coach, onClose, onSaved }) {
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="Date of Birth"
+                label={t('Date of Birth', 'Date of Birth')}
                 name="dateOfBirth"
                 type="date"
                 value={form.dateOfBirth}
@@ -177,7 +180,7 @@ function CoachFormDialog({ coach, onClose, onSaved }) {
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="Gender"
+                label={t('Gender', 'Gender')}
                 name="gender"
                 select
                 value={form.gender}
@@ -186,13 +189,13 @@ function CoachFormDialog({ coach, onClose, onSaved }) {
                 size="small"
               >
                 {GENDER_OPTIONS.map((o) => (
-                  <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>
+                  <MenuItem key={o.value} value={o.value}>{t(o.label, o.label)}</MenuItem>
                 ))}
               </TextField>
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                label="Status"
+                label={t('Status', 'Status')}
                 name="status"
                 select
                 value={form.status}
@@ -201,13 +204,13 @@ function CoachFormDialog({ coach, onClose, onSaved }) {
                 size="small"
               >
                 {STATUS_OPTIONS.map((o) => (
-                  <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>
+                  <MenuItem key={o.value} value={o.value}>{t(o.label, o.label)}</MenuItem>
                 ))}
               </TextField>
             </Grid>
             <Grid size={{ xs: 12 }}>
               <TextField
-                label="Address"
+                label={t('Address', 'Address')}
                 name="address"
                 value={form.address}
                 onChange={handleChange}
@@ -220,9 +223,9 @@ function CoachFormDialog({ coach, onClose, onSaved }) {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} disabled={saving}>Cancel</Button>
+          <Button onClick={onClose} disabled={saving}>{t('Cancel', 'Cancel')}</Button>
           <Button type="submit" variant="contained" disabled={saving}>
-            {saving ? <CircularProgress size={20} color="inherit" /> : (isEdit ? 'Save Changes' : 'Create')}
+            {saving ? <CircularProgress size={20} color="inherit" /> : (isEdit ? t('Save Changes', 'Save Changes') : t('Create', 'Create'))}
           </Button>
         </DialogActions>
       </form>
@@ -233,19 +236,20 @@ function CoachFormDialog({ coach, onClose, onSaved }) {
 // ── Delete Confirm ────────────────────────────────────────────────────────────
 
 function DeleteConfirmDialog({ coach, onClose, onConfirm, loading }) {
+  const { t } = useTranslation('common');
   if (!coach) return null;
   return (
     <Dialog open onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>Delete Coach</DialogTitle>
+      <DialogTitle>{t('Delete Coach', 'Delete Coach')}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Are you sure you want to delete <strong>{coach.username}</strong>? This action cannot be undone.
+          {t('Are you sure you want to delete {{name}}? This action cannot be undone.', 'Are you sure you want to delete {{name}}? This action cannot be undone.', { name: coach.username })}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={loading}>Cancel</Button>
+        <Button onClick={onClose} disabled={loading}>{t('Cancel', 'Cancel')}</Button>
         <Button onClick={onConfirm} color="error" variant="contained" disabled={loading}>
-          {loading ? <CircularProgress size={20} color="inherit" /> : 'Delete'}
+          {loading ? <CircularProgress size={20} color="inherit" /> : t('Delete', 'Delete')}
         </Button>
       </DialogActions>
     </Dialog>
@@ -256,6 +260,7 @@ function DeleteConfirmDialog({ coach, onClose, onConfirm, loading }) {
 
 export default function CoachesListPage() {
   const theme = useTheme();
+  const { t } = useTranslation('common');
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -271,7 +276,7 @@ export default function CoachesListPage() {
       const data = await getCoaches();
       setRows(Array.isArray(data) ? data : (data?.items ?? data?.data ?? []));
     } catch (err) {
-      setError(err.message || 'Failed to load coaches.');
+      setError(err.message || t('Failed to load coaches.', 'Failed to load coaches.'));
     } finally {
       setLoading(false);
     }
@@ -299,7 +304,7 @@ export default function CoachesListPage() {
       setRows((prev) => prev.filter((r) => r.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (err) {
-      setError(err.message || 'Failed to delete coach.');
+      setError(err.message || t('Failed to delete coach.', 'Failed to delete coach.'));
     } finally {
       setDeleteLoading(false);
     }
@@ -308,7 +313,7 @@ export default function CoachesListPage() {
   const columns = [
     {
       field: 'username',
-      headerName: 'Username',
+      headerName: t('Username', 'Username'),
       flex: 1,
       minWidth: 140,
       type: 'string',
@@ -321,54 +326,54 @@ export default function CoachesListPage() {
         </Stack>
       )
     },
-    { field: 'email', headerName: 'Email', flex: 1.5, minWidth: 200, type: 'string' },
+    { field: 'email', headerName: t('Email', 'Email'), flex: 1.5, minWidth: 200, type: 'string' },
     {
       field: 'gender',
-      headerName: 'Gender',
+      headerName: t('Gender', 'Gender'),
       width: 120,
       type: 'singleSelect',
       valueOptions: GENDER_OPTIONS,
       getOptionValue: (o) => o.value,
-      getOptionLabel: (o) => o.label,
-      valueFormatter: (value) => GENDER_LABEL[value] ?? '—'
+      getOptionLabel: (o) => t(o.label, o.label),
+      valueFormatter: (value) => t(GENDER_LABEL[value] ?? '—', GENDER_LABEL[value] ?? '—')
     },
     {
       field: 'dateOfBirth',
-      headerName: 'Date of Birth',
+      headerName: t('Date of Birth', 'Date of Birth'),
       width: 150,
       type: 'date',
       valueGetter: (value) => value ? new Date(value) : null,
       valueFormatter: (value) => value ? value.toLocaleDateString() : '—'
     },
-    { field: 'address', headerName: 'Address', flex: 1, minWidth: 160, type: 'string' },
+    { field: 'address', headerName: t('Address', 'Address'), flex: 1, minWidth: 160, type: 'string' },
     {
       field: 'status',
-      headerName: 'Status',
+      headerName: t('Status', 'Status'),
       width: 140,
       type: 'singleSelect',
       valueOptions: STATUS_OPTIONS,
       getOptionValue: (o) => o.value,
-      getOptionLabel: (o) => o.label,
+      getOptionLabel: (o) => t(o.label, o.label),
       renderCell: ({ value }) => {
         const s = STATUS_MAP[value] ?? { label: 'Unknown', color: 'default' };
-        return <Chip label={s.label} color={s.color} size="small" />;
+        return <Chip label={t(s.label, s.label)} color={s.color} size="small" />;
       }
     },
     {
       field: 'actions',
-      headerName: 'Actions',
+      headerName: t('Actions', 'Actions'),
       width: 110,
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
       renderCell: ({ row }) => (
         <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-          <Tooltip title="Edit">
+          <Tooltip title={t('Edit', 'Edit')}>
             <IconButton size="small" color="primary" onClick={() => openEdit(row)}>
               <IconPencil size={18} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete">
+          <Tooltip title={t('Delete', 'Delete')}>
             <IconButton size="small" color="error" onClick={() => setDeleteTarget(row)}>
               <IconTrash size={18} />
             </IconButton>
@@ -383,7 +388,7 @@ export default function CoachesListPage() {
       title={
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
           <IconUsers size={22} />
-          <Typography variant="h3">Coaches</Typography>
+          <Typography variant="h3">{t('Coaches', 'Coaches')}</Typography>
         </Stack>
       }
     >
