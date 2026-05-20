@@ -2,7 +2,9 @@ using DojoCore.API.Models;
 using DojoCore.Application.DTOs.Auth;
 using DojoCore.Application.Exceptions;
 using DojoCore.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace DojoCore.API.Controllers;
@@ -26,6 +28,32 @@ public class AuthController : ControllerBase
         _authService = authService;
         _logger = logger;
         _env = env;
+    }
+
+    /// <summary>Returns the currently authenticated user's profile from the JWT cookie. Used to rehydrate client state on page refresh.</summary>
+    [Authorize]
+    [HttpGet("me")]
+    [ProducesResponseType(typeof(LoginUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public IActionResult Me()
+    {
+        var sub      = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        var email    = User.FindFirstValue(ClaimTypes.Email)          ?? User.FindFirstValue("email");
+        var username = User.FindFirstValue("username");
+        var role     = User.FindFirstValue("role");
+        var status   = User.FindFirstValue("status");
+
+        if (sub is null || !Guid.TryParse(sub, out var id))
+            return Unauthorized();
+
+        return Ok(new LoginUserDto
+        {
+            Id       = id,
+            Email    = email    ?? string.Empty,
+            Username = username ?? string.Empty,
+            Role     = short.TryParse(role,   out var r) ? r : (short)0,
+            Status   = short.TryParse(status, out var s) ? s : (short)0
+        });
     }
 
     /// <summary>Authenticates a user using their email/username and password. Returns user info and sets an HttpOnly access token cookie.</summary>

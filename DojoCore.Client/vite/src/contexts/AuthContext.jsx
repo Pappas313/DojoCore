@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
-import { createContext, useCallback, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 // project imports
-import { loginApi, logoutApi, registerApi } from 'api/auth';
+import { loginApi, logoutApi, registerApi, getMeApi } from 'api/auth';
 
 // ==============================|| AUTH CONTEXT ||============================== //
 
@@ -11,6 +11,15 @@ export const AuthContext = createContext(undefined);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // ── Rehydrate from cookie on every page load / refresh ──────────────────────
+  useEffect(() => {
+    getMeApi()
+      .then((me) => setUser(me))
+      .catch(() => setUser(null))
+      .finally(() => setIsInitialized(true));
+  }, []);
 
   const login = useCallback(async (credentials) => {
     setIsLoading(true);
@@ -37,7 +46,11 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  return <AuthContext.Provider value={{ user, isLoading, login, logout, register }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, isLoading, isInitialized, login, logout, register }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 AuthProvider.propTypes = { children: PropTypes.node };

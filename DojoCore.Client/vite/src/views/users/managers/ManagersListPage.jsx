@@ -24,10 +24,12 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import {
   DataGrid,
-  GridToolbarContainer,
   GridToolbarFilterButton,
-  GridToolbarExport,
-  GridToolbarQuickFilter
+  Toolbar as GridToolbar,
+  QuickFilter,
+  QuickFilterControl,
+  ExportCsv,
+  ExportPrint
 } from '@mui/x-data-grid';
 
 // project imports
@@ -65,18 +67,21 @@ function getInitials(username = '') {
 function Toolbar({ onAdd }) {
   const { t } = useTranslation('common');
   return (
-    <GridToolbarContainer sx={{ px: 2, py: 1, gap: 1, justifyContent: 'space-between' }}>
+    <GridToolbar sx={{ px: 2, py: 1, gap: 1, justifyContent: 'space-between' }}>
       <Stack direction="row" sx={{ gap: 1 }}>
         <GridToolbarFilterButton />
-        <GridToolbarExport />
+        <ExportCsv />
+        <ExportPrint />
       </Stack>
       <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
-        <GridToolbarQuickFilter debounceMs={300} />
+        <QuickFilter debounceMs={300}>
+          <QuickFilterControl />
+        </QuickFilter>
         <Button variant="contained" size="small" startIcon={<IconPlus size={16} />} onClick={onAdd}>
           {t('Add Manager', 'Add Manager')}
         </Button>
       </Stack>
-    </GridToolbarContainer>
+    </GridToolbar>
   );
 }
 

@@ -11,6 +11,8 @@ public interface IUnitOfWork
     IManagerRepository Managers { get; }
     ICoachRepository Coaches { get; }
     ITranslationRepository Translations { get; }
+    ICompetitionImportRepository CompetitionImports { get; }
+    ICompetitionResultRepository CompetitionResults { get; }
 
     Task BeginTransactionAsync(CancellationToken ct = default);
     Task CommitAsync(CancellationToken ct = default);

@@ -27,6 +27,17 @@ export async function loginApi({ identifier, password }) {
   return handleResponse(response);
 }
 
+/**
+ * Returns the current user from the existing HttpOnly cookie.
+ * Returns null if the cookie is missing or expired (401).
+ * @returns {Promise<object|null>}
+ */
+export async function getMeApi() {
+  const response = await fetch('/api/auth/me', { credentials: 'include' });
+  if (response.status === 401) return null;
+  return handleResponse(response);
+}
+
 export async function logoutApi() {
   const response = await fetch('/api/auth/logout', {
     method: 'POST',

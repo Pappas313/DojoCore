@@ -24,9 +24,11 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons,
   GridRowModes,
-  GridToolbarContainer,
-  GridToolbarExport,
-  GridToolbarQuickFilter
+  Toolbar as GridToolbar,
+  ExportCsv,
+  ExportPrint,
+  QuickFilter,
+  QuickFilterControl
 } from '@mui/x-data-grid';
 
 // project imports
@@ -48,7 +50,7 @@ function tmpId() {
 function Toolbar({ onAddRow, hasNewRow, filterLanguage, filterPage, onFilterLanguageChange, onFilterPageChange, languages, pages }) {
   const { t } = useTranslation('common');
   return (
-    <GridToolbarContainer sx={{ px: 2, py: 1.5, gap: 1, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+    <GridToolbar sx={{ px: 2, py: 1.5, gap: 1, flexWrap: 'wrap', justifyContent: 'space-between' }}>
       <Stack direction="row" sx={{ gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
         {/* Language filter */}
         <FormControl size="small" sx={{ minWidth: 140 }}>
@@ -76,11 +78,14 @@ function Toolbar({ onAddRow, hasNewRow, filterLanguage, filterPage, onFilterLang
           </Select>
         </FormControl>
 
-        <GridToolbarExport />
+        <ExportCsv />
+        <ExportPrint />
       </Stack>
 
       <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
-        <GridToolbarQuickFilter debounceMs={300} />
+        <QuickFilter debounceMs={300}>
+          <QuickFilterControl />
+        </QuickFilter>
         <Button
           variant="contained"
           size="small"
@@ -91,7 +96,7 @@ function Toolbar({ onAddRow, hasNewRow, filterLanguage, filterPage, onFilterLang
           {t('Add a Row', 'Add a Row')}
         </Button>
       </Stack>
-    </GridToolbarContainer>
+    </GridToolbar>
   );
 }
 

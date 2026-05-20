@@ -18,6 +18,8 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public IManagerRepository Managers { get; }
     public ICoachRepository Coaches { get; }
     public ITranslationRepository Translations { get; }
+    public ICompetitionImportRepository CompetitionImports { get; }
+    public ICompetitionResultRepository CompetitionResults { get; }
 
     public UnitOfWork(NpgsqlConnection connection)
     {
@@ -32,6 +34,8 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         Managers = new ManagerRepository(_connection, () => _transaction);
         Coaches = new CoachRepository(_connection, () => _transaction);
         Translations = new TranslationRepository(_connection, () => _transaction);
+        CompetitionImports = new CompetitionImportRepository(_connection, () => _transaction);
+        CompetitionResults = new CompetitionResultRepository(_connection, () => _transaction);
     }
 
     public Task BeginTransactionAsync(CancellationToken ct = default)

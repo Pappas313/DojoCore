@@ -1,6 +1,10 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import jsconfigPaths from 'vite-jsconfig-paths';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(({ mode }) => {
   // depending on your application, base can also be "/"
@@ -34,20 +38,20 @@ export default defineConfig(({ mode }) => {
       global: 'window'
     },
     resolve: {
+      extensions: ['.jsx', '.tsx', '.mjs', '.js', '.ts', '.json'],
       alias: {
-        // { find: '', replacement: path.resolve(__dirname, 'src') },
-        // {
-        //   find: /^~(.+)/,
-        //   replacement: path.join(process.cwd(), 'node_modules/$1')
-        // },
-        // {
-        //   find: /^src(.+)/,
-        //   replacement: path.join(process.cwd(), 'src/$1')
-        // }
-        // {
-        //   find: 'assets',
-        //   replacement: path.join(process.cwd(), 'src/assets')
-        // },
+        'api':          path.resolve(__dirname, 'src/api'),
+        'views':        path.resolve(__dirname, 'src/views'),
+        'layout':       path.resolve(__dirname, 'src/layout'),
+        'ui-component': path.resolve(__dirname, 'src/ui-component'),
+        'contexts':     path.resolve(__dirname, 'src/contexts'),
+        'hooks':        path.resolve(__dirname, 'src/hooks'),
+        'store':        path.resolve(__dirname, 'src/store'),
+        'themes':       path.resolve(__dirname, 'src/themes'),
+        'utils':        path.resolve(__dirname, 'src/utils'),
+        'assets':       path.resolve(__dirname, 'src/assets'),
+        'menu-items':   path.resolve(__dirname, 'src/menu-items'),
+        'routes':       path.resolve(__dirname, 'src/routes'),
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs'
       }
     },

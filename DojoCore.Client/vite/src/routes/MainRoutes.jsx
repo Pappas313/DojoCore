@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+import { Navigate } from 'react-router-dom';
 
 // project imports
 import MainLayout from 'layout/MainLayout';
@@ -31,6 +32,9 @@ const GymMembershipsPage = Loadable(lazy(() => import('views/gyms/GymMemberships
 // admin routing
 const MenuManagePage = Loadable(lazy(() => import('views/menu/MenuManagePage')));
 const TranslationsPage = Loadable(lazy(() => import('views/admin/TranslationsPage')));
+const CompetitionImportPage = Loadable(lazy(() => import('views/admin/competitions/CompetitionImportPage')));
+const CompetitionResultsPage = Loadable(lazy(() => import('views/admin/competitions/CompetitionResultsPage')));
+const CompetitionListPage = Loadable(lazy(() => import('views/admin/competitions/CompetitionListPage')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -102,6 +106,18 @@ const MainRoutes = {
       ]
     },
     {
+      path: 'competitions/list',
+      element: <CompetitionListPage />
+    },
+    {
+      path: 'competitions/import',
+      element: <CompetitionImportPage />
+    },
+    {
+      path: 'competitions/results/:importId',
+      element: <CompetitionResultsPage />
+    },
+    {
       path: 'admin',
       children: [
         {
@@ -111,6 +127,22 @@ const MainRoutes = {
         {
           path: 'translations',
           element: <TranslationsPage />
+        },
+        {
+          path: 'competitions',
+          element: <CompetitionImportPage />
+        },
+        {
+          path: 'competitions/list',
+          element: <CompetitionListPage />
+        },
+        {
+          path: 'competitions/results',
+          element: <Navigate to="/admin/competitions" replace />
+        },
+        {
+          path: 'competitions/results/:importId',
+          element: <CompetitionResultsPage />
         }
       ]
     }

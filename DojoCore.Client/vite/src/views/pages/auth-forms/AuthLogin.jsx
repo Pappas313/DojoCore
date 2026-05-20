@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 
@@ -37,7 +37,11 @@ const loginSchema = Yup.object({
 export default function AuthLogin() {
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation('common');
+
+  // Redirect back to the page the user was trying to reach, or fall back to dashboard
+  const redirectTo = location.state?.from?.pathname ?? DASHBOARD_PATH;
 
   const [values, setValues] = useState({ identifier: '', password: '' });
   const [errors, setErrors] = useState({});
@@ -71,7 +75,7 @@ export default function AuthLogin() {
 
     try {
       await login({ identifier: values.identifier, password: values.password });
-      navigate(DASHBOARD_PATH);
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setServerError(err.message || t('Login failed. Please try again.', 'Login failed. Please try again.'));
     }

@@ -42,6 +42,8 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IGymService, GymService>();
         services.AddScoped<IMapService, MapService>();
         services.AddScoped<ITranslationService, TranslationService>();
+        services.AddSingleton<IExcelCompetitionParser, ExcelCompetitionParser>();
+        services.AddScoped<ICompetitionService, CompetitionService>();
 
         return services;
     }
