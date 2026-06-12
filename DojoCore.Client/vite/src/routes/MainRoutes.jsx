@@ -36,6 +36,10 @@ const CompetitionImportPage = Loadable(lazy(() => import('views/admin/competitio
 const CompetitionResultsPage = Loadable(lazy(() => import('views/admin/competitions/CompetitionResultsPage')));
 const CompetitionListPage = Loadable(lazy(() => import('views/admin/competitions/CompetitionListPage')));
 
+// settings routing
+const ProfilePage = Loadable(lazy(() => import('views/settings/profile/ProfilePage')));
+const AccountSettingsPage = Loadable(lazy(() => import('views/settings/account/AccountSettingsPage')));
+
 // maps routing
 const CombinedMapPage = Loadable(lazy(() => import('views/maps/CombinedMapPage')));
 const AthletesMapPage = Loadable(lazy(() => import('views/maps/AthletesMapPage')));
@@ -76,6 +80,19 @@ const MainRoutes = {
     {
       path: 'shadow',
       element: <UtilsShadow />
+    },
+    {
+      path: 'settings',
+      children: [
+        {
+          path: 'profile',
+          element: <ProfilePage />
+        },
+        {
+          path: 'account',
+          element: <AccountSettingsPage />
+        }
+      ]
     },
     {
       path: '/main',

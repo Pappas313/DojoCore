@@ -156,13 +156,13 @@ export default function ProfileSection() {
                           '& .MuiListItemButton-root': { mt: 0.5 }
                         }}
                       >
-                        <ListItemButton sx={{ borderRadius: `${borderRadius}px` }}>
+                        <ListItemButton sx={{ borderRadius: `${borderRadius}px` }} onClick={() => { setOpen(false); navigate('/settings/account'); }}>
                           <ListItemIcon>
                             <IconSettings stroke={1.5} size="20px" />
                           </ListItemIcon>
                           <ListItemText primary={<Typography variant="body2">{t('profile.accountSettings', 'Account Settings')}</Typography>} />
                         </ListItemButton>
-                        <ListItemButton sx={{ borderRadius: `${borderRadius}px` }}>
+                        <ListItemButton sx={{ borderRadius: `${borderRadius}px` }} onClick={() => { setOpen(false); navigate('/settings/profile'); }}>
                           <ListItemIcon>
                             <IconUser stroke={1.5} size="20px" />
                           </ListItemIcon>
