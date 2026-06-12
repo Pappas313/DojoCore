@@ -4,11 +4,12 @@ import utilities from './utilities';
 import other from './other';
 import admin from './admin';
 import competitions from './competitions';
+import maps from './maps';
 
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-  items: [dashboard, pages, utilities, other, competitions, admin]
+  items: [dashboard, pages, utilities, other, competitions, maps, admin]
 };
 
 export default menuItems;

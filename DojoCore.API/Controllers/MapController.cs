@@ -30,4 +30,37 @@ public class MapController : ControllerBase
         var pins = await _mapService.GetAllPinsAsync(ct);
         return Ok(pins);
     }
+
+    /// <summary>Returns map pins for athletes only.</summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <response code="200">Athlete map pins.</response>
+    [HttpGet("athletes")]
+    [ProducesResponseType(typeof(List<MapPinDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAthletePins(CancellationToken ct)
+    {
+        var pins = await _mapService.GetAthletePinsAsync(ct);
+        return Ok(pins);
+    }
+
+    /// <summary>Returns map pins for coaches only.</summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <response code="200">Coach map pins.</response>
+    [HttpGet("coaches")]
+    [ProducesResponseType(typeof(List<MapPinDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCoachPins(CancellationToken ct)
+    {
+        var pins = await _mapService.GetCoachPinsAsync(ct);
+        return Ok(pins);
+    }
+
+    /// <summary>Returns map pins for managers only.</summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <response code="200">Manager map pins.</response>
+    [HttpGet("managers")]
+    [ProducesResponseType(typeof(List<MapPinDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetManagerPins(CancellationToken ct)
+    {
+        var pins = await _mapService.GetManagerPinsAsync(ct);
+        return Ok(pins);
+    }
 }

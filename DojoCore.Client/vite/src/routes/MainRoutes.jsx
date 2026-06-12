@@ -36,6 +36,12 @@ const CompetitionImportPage = Loadable(lazy(() => import('views/admin/competitio
 const CompetitionResultsPage = Loadable(lazy(() => import('views/admin/competitions/CompetitionResultsPage')));
 const CompetitionListPage = Loadable(lazy(() => import('views/admin/competitions/CompetitionListPage')));
 
+// maps routing
+const CombinedMapPage = Loadable(lazy(() => import('views/maps/CombinedMapPage')));
+const AthletesMapPage = Loadable(lazy(() => import('views/maps/AthletesMapPage')));
+const CoachesMapPage = Loadable(lazy(() => import('views/maps/CoachesMapPage')));
+const ManagersMapPage = Loadable(lazy(() => import('views/maps/ManagersMapPage')));
+
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -108,6 +114,27 @@ const MainRoutes = {
     {
       path: 'competitions/list',
       element: <CompetitionListPage />
+    },
+    {
+      path: 'maps',
+      children: [
+        {
+          path: 'combined',
+          element: <CombinedMapPage />
+        },
+        {
+          path: 'athletes',
+          element: <AthletesMapPage />
+        },
+        {
+          path: 'coaches',
+          element: <CoachesMapPage />
+        },
+        {
+          path: 'managers',
+          element: <ManagersMapPage />
+        }
+      ]
     },
     {
       path: 'competitions/import',
