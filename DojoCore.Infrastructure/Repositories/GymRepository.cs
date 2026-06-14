@@ -18,7 +18,9 @@ public class GymRepository : IGymRepository
 
     private const string SelectColumns = """
         SELECT id, name, address, latitude, longitude, gym_code AS GymCode,
-               created_by AS CreatedBy, status, created_at AS CreatedAt, updated_at AS UpdatedAt
+               created_by AS CreatedBy, logo_image AS LogoImage, phone AS Phone,
+               contact_email AS ContactEmail, description AS Description,
+               status, created_at AS CreatedAt, updated_at AS UpdatedAt
         FROM gyms
         """;
 
@@ -55,9 +57,11 @@ public class GymRepository : IGymRepository
     {
         const string sql = """
             INSERT INTO gyms
-                (id, name, address, latitude, longitude, gym_code, created_by, status, created_at, updated_at)
+                (id, name, address, latitude, longitude, gym_code, created_by,
+                 logo_image, phone, contact_email, description, status, created_at, updated_at)
             VALUES
-                (@Id, @Name, @Address, @Latitude, @Longitude, @GymCode, @CreatedBy, @Status, @CreatedAt, @UpdatedAt)
+                (@Id, @Name, @Address, @Latitude, @Longitude, @GymCode, @CreatedBy,
+                 @LogoImage, @Phone, @ContactEmail, @Description, @Status, @CreatedAt, @UpdatedAt)
             """;
 
         var cmd = new CommandDefinition(sql, gym, transaction: _transaction(), cancellationToken: ct);

@@ -24,6 +24,18 @@ public class GymDto
     /// <summary>Id of the user who created this gym.</summary>
     public Guid CreatedBy { get; set; }
 
+    /// <summary>Logo image filename.</summary>
+    public string? LogoImage { get; set; }
+
+    /// <summary>Phone number.</summary>
+    public string? Phone { get; set; }
+
+    /// <summary>Contact e-mail address.</summary>
+    public string? ContactEmail { get; set; }
+
+    /// <summary>Short description of the gym.</summary>
+    public string? Description { get; set; }
+
     /// <summary>Status (0 = pending, 1 = active, 2 = inactive).</summary>
     public short Status { get; set; }
 

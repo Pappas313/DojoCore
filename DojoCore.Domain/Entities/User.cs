@@ -13,6 +13,11 @@ public class User
     public DateOnly? DateOfBirth { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? ProfileImage { get; set; }
+    public string? Phone { get; set; }
+    public string? Description { get; set; }
     public short Status { get; set; } = 0;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

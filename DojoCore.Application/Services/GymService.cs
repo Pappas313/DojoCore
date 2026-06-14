@@ -99,63 +99,82 @@ public class GymService : IGymService
     }
     private static GymDto MapToDto(Gym g) => new()
     {
-        Id        = g.Id,
-        Name      = g.Name,
-        Address   = g.Address,
-        Latitude  = g.Latitude,
-        Longitude = g.Longitude,
-        GymCode   = g.GymCode,
-        CreatedBy = g.CreatedBy,
-        Status    = g.Status,
-        CreatedAt = g.CreatedAt,
-        UpdatedAt = g.UpdatedAt
+        Id           = g.Id,
+        Name         = g.Name,
+        Address      = g.Address,
+        Latitude     = g.Latitude,
+        Longitude    = g.Longitude,
+        GymCode      = g.GymCode,
+        CreatedBy    = g.CreatedBy,
+        LogoImage    = g.LogoImage,
+        Phone        = g.Phone,
+        ContactEmail = g.ContactEmail,
+        Description  = g.Description,
+        Status       = g.Status,
+        CreatedAt    = g.CreatedAt,
+        UpdatedAt    = g.UpdatedAt
     };
 
     private static CoachDto MapToCoachDto(User u) => new()
     {
-        Id          = u.Id,
-        Username    = u.Username,
-        Email       = u.Email,
-        UserCode    = u.UserCode,
-        Address     = u.Address,
-        Gender      = u.Gender,
-        DateOfBirth = u.DateOfBirth,
-        Latitude    = u.Latitude,
-        Longitude   = u.Longitude,
-        Status      = u.Status,
-        CreatedAt   = u.CreatedAt,
-        UpdatedAt   = u.UpdatedAt
+        Id           = u.Id,
+        Username     = u.Username,
+        Email        = u.Email,
+        UserCode     = u.UserCode,
+        FirstName    = u.FirstName,
+        LastName     = u.LastName,
+        ProfileImage = u.ProfileImage,
+        Phone        = u.Phone,
+        Description  = u.Description,
+        Address      = u.Address,
+        Gender       = u.Gender,
+        DateOfBirth  = u.DateOfBirth,
+        Latitude     = u.Latitude,
+        Longitude    = u.Longitude,
+        Status       = u.Status,
+        CreatedAt    = u.CreatedAt,
+        UpdatedAt    = u.UpdatedAt
     };
 
     private static ManagerDto MapToManagerDto(User u) => new()
     {
-        Id          = u.Id,
-        Username    = u.Username,
-        Email       = u.Email,
-        UserCode    = u.UserCode,
-        Address     = u.Address,
-        Gender      = u.Gender,
-        DateOfBirth = u.DateOfBirth,
-        Latitude    = u.Latitude,
-        Longitude   = u.Longitude,
-        Status      = u.Status,
-        CreatedAt   = u.CreatedAt,
-        UpdatedAt   = u.UpdatedAt
+        Id           = u.Id,
+        Username     = u.Username,
+        Email        = u.Email,
+        UserCode     = u.UserCode,
+        FirstName    = u.FirstName,
+        LastName     = u.LastName,
+        ProfileImage = u.ProfileImage,
+        Phone        = u.Phone,
+        Description  = u.Description,
+        Address      = u.Address,
+        Gender       = u.Gender,
+        DateOfBirth  = u.DateOfBirth,
+        Latitude     = u.Latitude,
+        Longitude    = u.Longitude,
+        Status       = u.Status,
+        CreatedAt    = u.CreatedAt,
+        UpdatedAt    = u.UpdatedAt
     };
 
     private static AthleteDto MapToAthleteDto(User u) => new()
     {
-        Id          = u.Id,
-        Username    = u.Username,
-        Email       = u.Email,
-        UserCode    = u.UserCode,
-        Address     = u.Address,
-        Gender      = u.Gender,
-        DateOfBirth = u.DateOfBirth,
-        Latitude    = u.Latitude,
-        Longitude   = u.Longitude,
-        Status      = u.Status,
-        CreatedAt   = u.CreatedAt,
-        UpdatedAt   = u.UpdatedAt
+        Id           = u.Id,
+        Username     = u.Username,
+        Email        = u.Email,
+        UserCode     = u.UserCode,
+        FirstName    = u.FirstName,
+        LastName     = u.LastName,
+        ProfileImage = u.ProfileImage,
+        Phone        = u.Phone,
+        Description  = u.Description,
+        Address      = u.Address,
+        Gender       = u.Gender,
+        DateOfBirth  = u.DateOfBirth,
+        Latitude     = u.Latitude,
+        Longitude    = u.Longitude,
+        Status       = u.Status,
+        CreatedAt    = u.CreatedAt,
+        UpdatedAt    = u.UpdatedAt
     };
 }

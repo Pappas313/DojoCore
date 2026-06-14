@@ -40,11 +40,15 @@ public class UserRepository : IUserRepository
     {
         const string sql = """
             INSERT INTO users
-                (id, username, email, password_hash, user_code, role, address, gender,
-                 date_of_birth, latitude, longitude, status, created_at, updated_at)
+                (id, username, email, password_hash, user_code, role,
+                 first_name, last_name, profile_image, phone, description,
+                 address, gender, date_of_birth, latitude, longitude,
+                 status, created_at, updated_at)
             VALUES
-                (@Id, @Username, @Email, @PasswordHash, @UserCode, @Role, @Address, @Gender,
-                 @DateOfBirth, @Latitude, @Longitude, @Status, @CreatedAt, @UpdatedAt)
+                (@Id, @Username, @Email, @PasswordHash, @UserCode, @Role,
+                 @FirstName, @LastName, @ProfileImage, @Phone, @Description,
+                 @Address, @Gender, @DateOfBirth, @Latitude, @Longitude,
+                 @Status, @CreatedAt, @UpdatedAt)
             """;
 
         var param = new
@@ -55,6 +59,11 @@ public class UserRepository : IUserRepository
             user.PasswordHash,
             user.UserCode,
             user.Role,
+            user.FirstName,
+            user.LastName,
+            user.ProfileImage,
+            user.Phone,
+            user.Description,
             user.Address,
             user.Gender,
             DateOfBirth = user.DateOfBirth.HasValue
@@ -80,6 +89,11 @@ public class UserRepository : IUserRepository
                    password_hash  AS "PasswordHash",
                    user_code      AS "UserCode",
                    role           AS "Role",
+                   first_name     AS "FirstName",
+                   last_name      AS "LastName",
+                   profile_image  AS "ProfileImage",
+                   phone          AS "Phone",
+                   description    AS "Description",
                    address        AS "Address",
                    gender         AS "Gender",
                    date_of_birth  AS "DateOfBirth",

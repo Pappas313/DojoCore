@@ -66,15 +66,19 @@ public class AthleteService : IAthleteService
             }
         }
 
-        athlete.Username = request.Username;
-        athlete.Email = request.Email;
-        athlete.Address = request.Address;
-        athlete.Gender = request.Gender;
+        athlete.Username    = request.Username;
+        athlete.Email       = request.Email;
+        athlete.FirstName   = request.FirstName;
+        athlete.LastName    = request.LastName;
+        athlete.Phone       = request.Phone;
+        athlete.Description = request.Description;
+        athlete.Address     = request.Address;
+        athlete.Gender      = request.Gender;
         athlete.DateOfBirth = request.DateOfBirth;
-        athlete.Status = request.Status;
-        athlete.Latitude = lat;
-        athlete.Longitude = lon;
-        athlete.UpdatedAt = DateTime.UtcNow;
+        athlete.Status      = request.Status;
+        athlete.Latitude    = lat;
+        athlete.Longitude   = lon;
+        athlete.UpdatedAt   = DateTime.UtcNow;
 
         await _uow.Athletes.UpdateAsync(athlete, ct);
 
@@ -92,17 +96,22 @@ public class AthleteService : IAthleteService
     // ------------------------------------------------------------------
     private static AthleteDto MapToDto(Domain.Entities.User u) => new()
     {
-        Id          = u.Id,
-        Username    = u.Username,
-        Email       = u.Email,
-        UserCode    = u.UserCode,
-        Address     = u.Address,
-        Gender      = u.Gender,
-        DateOfBirth = u.DateOfBirth,
-        Latitude    = u.Latitude,
-        Longitude   = u.Longitude,
-        Status      = u.Status,
-        CreatedAt   = u.CreatedAt,
-        UpdatedAt   = u.UpdatedAt
+        Id           = u.Id,
+        Username     = u.Username,
+        Email        = u.Email,
+        UserCode     = u.UserCode,
+        FirstName    = u.FirstName,
+        LastName     = u.LastName,
+        ProfileImage = u.ProfileImage,
+        Phone        = u.Phone,
+        Description  = u.Description,
+        Address      = u.Address,
+        Gender       = u.Gender,
+        DateOfBirth  = u.DateOfBirth,
+        Latitude     = u.Latitude,
+        Longitude    = u.Longitude,
+        Status       = u.Status,
+        CreatedAt    = u.CreatedAt,
+        UpdatedAt    = u.UpdatedAt
     };
 }

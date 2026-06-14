@@ -64,15 +64,19 @@ public class CoachService : ICoachService
             }
         }
 
-        coach.Username = request.Username;
-        coach.Email = request.Email;
-        coach.Address = request.Address;
-        coach.Gender = request.Gender;
+        coach.Username    = request.Username;
+        coach.Email       = request.Email;
+        coach.FirstName   = request.FirstName;
+        coach.LastName    = request.LastName;
+        coach.Phone       = request.Phone;
+        coach.Description = request.Description;
+        coach.Address     = request.Address;
+        coach.Gender      = request.Gender;
         coach.DateOfBirth = request.DateOfBirth;
-        coach.Status = request.Status;
-        coach.Latitude = lat;
-        coach.Longitude = lon;
-        coach.UpdatedAt = DateTime.UtcNow;
+        coach.Status      = request.Status;
+        coach.Latitude    = lat;
+        coach.Longitude   = lon;
+        coach.UpdatedAt   = DateTime.UtcNow;
 
         await _uow.Coaches.UpdateAsync(coach, ct);
 
@@ -90,17 +94,22 @@ public class CoachService : ICoachService
     // ------------------------------------------------------------------
     private static CoachDto MapToDto(Domain.Entities.User u) => new()
     {
-        Id          = u.Id,
-        Username    = u.Username,
-        Email       = u.Email,
-        UserCode    = u.UserCode,
-        Address     = u.Address,
-        Gender      = u.Gender,
-        DateOfBirth = u.DateOfBirth,
-        Latitude    = u.Latitude,
-        Longitude   = u.Longitude,
-        Status      = u.Status,
-        CreatedAt   = u.CreatedAt,
-        UpdatedAt   = u.UpdatedAt
+        Id           = u.Id,
+        Username     = u.Username,
+        Email        = u.Email,
+        UserCode     = u.UserCode,
+        FirstName    = u.FirstName,
+        LastName     = u.LastName,
+        ProfileImage = u.ProfileImage,
+        Phone        = u.Phone,
+        Description  = u.Description,
+        Address      = u.Address,
+        Gender       = u.Gender,
+        DateOfBirth  = u.DateOfBirth,
+        Latitude     = u.Latitude,
+        Longitude    = u.Longitude,
+        Status       = u.Status,
+        CreatedAt    = u.CreatedAt,
+        UpdatedAt    = u.UpdatedAt
     };
 }

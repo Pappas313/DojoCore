@@ -66,6 +66,10 @@ public class ManagerService : IManagerService
 
         manager.Username    = request.Username;
         manager.Email       = request.Email;
+        manager.FirstName   = request.FirstName;
+        manager.LastName    = request.LastName;
+        manager.Phone       = request.Phone;
+        manager.Description = request.Description;
         manager.Address     = request.Address;
         manager.Gender      = request.Gender;
         manager.DateOfBirth = request.DateOfBirth;
@@ -90,17 +94,22 @@ public class ManagerService : IManagerService
     // ------------------------------------------------------------------
     private static ManagerDto MapToDto(Domain.Entities.User u) => new()
     {
-        Id          = u.Id,
-        Username    = u.Username,
-        Email       = u.Email,
-        UserCode    = u.UserCode,
-        Address     = u.Address,
-        Gender      = u.Gender,
-        DateOfBirth = u.DateOfBirth,
-        Latitude    = u.Latitude,
-        Longitude   = u.Longitude,
-        Status      = u.Status,
-        CreatedAt   = u.CreatedAt,
-        UpdatedAt   = u.UpdatedAt
+        Id           = u.Id,
+        Username     = u.Username,
+        Email        = u.Email,
+        UserCode     = u.UserCode,
+        FirstName    = u.FirstName,
+        LastName     = u.LastName,
+        ProfileImage = u.ProfileImage,
+        Phone        = u.Phone,
+        Description  = u.Description,
+        Address      = u.Address,
+        Gender       = u.Gender,
+        DateOfBirth  = u.DateOfBirth,
+        Latitude     = u.Latitude,
+        Longitude    = u.Longitude,
+        Status       = u.Status,
+        CreatedAt    = u.CreatedAt,
+        UpdatedAt    = u.UpdatedAt
     };
 }

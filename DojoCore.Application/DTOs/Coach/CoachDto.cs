@@ -15,6 +15,21 @@ public class CoachDto
     /// <summary>Public user code.</summary>
     public string UserCode { get; set; } = string.Empty;
 
+    /// <summary>First name.</summary>
+    public string? FirstName { get; set; }
+
+    /// <summary>Last name.</summary>
+    public string? LastName { get; set; }
+
+    /// <summary>Profile image filename.</summary>
+    public string? ProfileImage { get; set; }
+
+    /// <summary>Phone number.</summary>
+    public string? Phone { get; set; }
+
+    /// <summary>Short biography / description.</summary>
+    public string? Description { get; set; }
+
     /// <summary>Address.</summary>
     public string? Address { get; set; }
 
