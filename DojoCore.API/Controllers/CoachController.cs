@@ -2,7 +2,9 @@ using DojoCore.Application.DTOs.Coach;
 using DojoCore.Application.DTOs.Map;
 using DojoCore.Application.Exceptions;
 using DojoCore.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace DojoCore.API.Controllers;
 
@@ -24,14 +26,26 @@ public class CoachController : ControllerBase
         _mapService = mapService;
     }
 
-    /// <summary>Returns all coaches.</summary>
+    /// <summary>
+    /// Returns coaches visible to the caller. Managers, coaches and athletes belonging to a gym
+    /// see only coaches of their own gym(s); freelancer athletes see coaches of all gyms.
+    /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <response code="200">List of coaches.</response>
+    /// <response code="401">Caller is not authenticated.</response>
+    [Authorize]
     [HttpGet]
     [ProducesResponseType(typeof(List<CoachDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
-        var coaches = await _coachService.GetAllAsync(ct);
+        var sub  = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        var role = User.FindFirstValue("role");
+
+        if (sub is null || !Guid.TryParse(sub, out var callerId))
+            return Unauthorized();
+
+        var coaches = await _coachService.GetVisibleAsync(callerId, short.TryParse(role, out var r) ? r : (short)0, ct);
         return Ok(coaches);
     }
 

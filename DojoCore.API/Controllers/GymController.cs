@@ -4,7 +4,9 @@ using DojoCore.Application.DTOs.Gym;
 using DojoCore.Application.DTOs.Manager;
 using DojoCore.Application.DTOs.Map;
 using DojoCore.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace DojoCore.API.Controllers;
 
@@ -54,10 +56,11 @@ public class GymController : ControllerBase
         return Ok(gym);
     }
 
-    /// <summary>Returns all coaches assigned to a gym.</summary>
+    /// <summary>Returns all coaches assigned to a gym. Admin only.</summary>
     /// <param name="id">Gym identifier.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <response code="200">List of coaches.</response>
+    [Authorize(Policy = "AdminOnly")]
     [HttpGet("{id:guid}/coaches")]
     [ProducesResponseType(typeof(List<CoachDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCoaches(Guid id, CancellationToken ct)
@@ -66,10 +69,11 @@ public class GymController : ControllerBase
         return Ok(coaches);
     }
 
-    /// <summary>Returns all managers assigned to a gym.</summary>
+    /// <summary>Returns all managers assigned to a gym. Admin only.</summary>
     /// <param name="id">Gym identifier.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <response code="200">List of managers.</response>
+    [Authorize(Policy = "AdminOnly")]
     [HttpGet("{id:guid}/managers")]
     [ProducesResponseType(typeof(List<ManagerDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetManagers(Guid id, CancellationToken ct)
@@ -78,10 +82,11 @@ public class GymController : ControllerBase
         return Ok(managers);
     }
 
-    /// <summary>Returns all athletes assigned to a gym.</summary>
+    /// <summary>Returns all athletes assigned to a gym. Admin only.</summary>
     /// <param name="id">Gym identifier.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <response code="200">List of athletes.</response>
+    [Authorize(Policy = "AdminOnly")]
     [HttpGet("{id:guid}/athletes")]
     [ProducesResponseType(typeof(List<AthleteDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAthletes(Guid id, CancellationToken ct)
@@ -90,11 +95,12 @@ public class GymController : ControllerBase
         return Ok(athletes);
     }
 
-    /// <summary>Returns a single gym with all its members grouped by role (coaches, managers, athletes).</summary>
+    /// <summary>Returns a single gym with all its members grouped by role (coaches, managers, athletes). Admin only.</summary>
     /// <param name="id">Gym identifier.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <response code="200">Gym with grouped members.</response>
     /// <response code="404">Gym not found.</response>
+    [Authorize(Policy = "AdminOnly")]
     [HttpGet("{id:guid}/members")]
     [ProducesResponseType(typeof(GymWithMembersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -118,14 +124,39 @@ public class GymController : ControllerBase
         return Ok(pins);
     }
 
-    /// <summary>Returns all gyms with their members grouped by role (coaches, managers, athletes).</summary>
+    /// <summary>Returns all gyms with their members grouped by role (coaches, managers, athletes). Admin only.</summary>
     /// <param name="ct">Cancellation token.</param>
     /// <response code="200">List of gyms with grouped members.</response>
+    [Authorize(Policy = "AdminOnly")]
     [HttpGet("members")]
     [ProducesResponseType(typeof(List<GymWithMembersDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllWithMembers(CancellationToken ct)
     {
         var result = await _gymService.GetAllWithMembersAsync(ct);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns the members visible to the currently authenticated user, categorized by gym.
+    /// Managers, coaches and athletes see only members of the gym(s) they belong to.
+    /// Freelancer athletes (no gym membership) see managers and coaches of all gyms.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <response code="200">Members visible to the caller.</response>
+    /// <response code="401">Caller is not authenticated.</response>
+    [Authorize]
+    [HttpGet("mine/members")]
+    [ProducesResponseType(typeof(MyMembersDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetMyMembers(CancellationToken ct)
+    {
+        var sub  = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        var role = User.FindFirstValue("role");
+
+        if (sub is null || !Guid.TryParse(sub, out var userId))
+            return Unauthorized();
+
+        var result = await _gymService.GetMyMembersAsync(userId, short.TryParse(role, out var r) ? r : (short)0, ct);
         return Ok(result);
     }
 }

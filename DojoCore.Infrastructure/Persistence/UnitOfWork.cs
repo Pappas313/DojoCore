@@ -12,6 +12,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public IUserRepository Users { get; }
     public IGymRepository Gyms { get; }
     public IUserGymRepository UserGyms { get; }
+    public IGroupRepository Groups { get; }
     public IDocumentRepository Documents { get; }
     public IMenuItemRepository MenuItems { get; }
     public IAthleteRepository Athletes { get; }
@@ -28,6 +29,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         Users = new UserRepository(_connection, () => _transaction);
         Gyms = new GymRepository(_connection, () => _transaction);
         UserGyms = new UserGymRepository(_connection, () => _transaction);
+        Groups = new GroupRepository(_connection, () => _transaction);
         Documents = new DocumentRepository(_connection, () => _transaction);
         MenuItems = new MenuItemRepository(_connection, () => _transaction);
         Athletes = new AthleteRepository(_connection, () => _transaction);

@@ -96,14 +96,14 @@ export default function GymMembershipsPage() {
   const [expanded, setExpanded] = useState(new Set());
 
   useEffect(() => {
-    fetch('/api/gyms/members', { credentials: 'include' })
+    fetch('/api/gyms/mine/members', { credentials: 'include' })
       .then(async (res) => {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        const raw = Array.isArray(data) ? data : (data?.items ?? data?.data ?? []);
-        // API returns [{ gym: {...}, coaches, managers, athletes }] — flatten
+        const raw = Array.isArray(data) ? data : (data?.gyms ?? data?.items ?? data?.data ?? []);
+        // API returns { gyms: [{ gym: {...}, coaches, managers, athletes }] } — flatten
         const list = raw.map((item) => ({
           ...item.gym,
           coaches:  item.coaches  ?? [],

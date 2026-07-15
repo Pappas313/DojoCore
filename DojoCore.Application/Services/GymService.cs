@@ -83,6 +83,64 @@ public class GymService : IGymService
         return result;
     }
 
+    // Role values (see RegisterOperationFilter): 0 = Admin, 1 = Coach, 2 = Manager, 3 = Athlete
+    private const short AdminRole = 0;
+    private const short AthleteRole = 3;
+
+    public async Task<MyMembersDto> GetMyMembersAsync(Guid userId, short role, CancellationToken ct = default)
+    {
+        // Admins see every gym and all of its members
+        if (role == AdminRole)
+        {
+            var allGyms = await GetAllWithMembersAsync(ct);
+            return new MyMembersDto { IsFreelancer = false, Gyms = allGyms };
+        }
+
+        var gymIds = (await _uow.UserGyms.GetGymIdsByUserIdAsync(userId, ct)).ToList();
+
+        // Freelancer athlete: no gym membership -> see managers and coaches of all gyms (no athletes)
+        if (role == AthleteRole && gymIds.Count == 0)
+        {
+            var gyms = await _uow.Gyms.GetAllAsync(ct);
+            var result = new List<GymWithMembersDto>();
+
+            foreach (var gym in gyms)
+            {
+                var coaches  = await _uow.Coaches.GetByGymIdAsync(gym.Id, ct);
+                var managers = await _uow.Managers.GetByGymIdAsync(gym.Id, ct);
+
+                result.Add(new GymWithMembersDto
+                {
+                    Gym      = MapToDto(gym),
+                    Coaches  = coaches.Select(MapToCoachDto).ToList(),
+                    Managers = managers.Select(MapToManagerDto).ToList(),
+                    Athletes = []
+                });
+            }
+
+            return new MyMembersDto { IsFreelancer = true, Gyms = result };
+        }
+
+        // Manager / Coach / Athlete belonging to gym(s): see members of their own gym(s) only
+        var visibleGyms = new List<GymWithMembersDto>();
+        foreach (var gymId in gymIds)
+        {
+            var gym = await _uow.Gyms.GetByIdAsync(gymId, ct);
+            if (gym is null) continue;
+
+            var (coaches, managers, athletes) = await FetchMembersAsync(gymId, ct);
+            visibleGyms.Add(new GymWithMembersDto
+            {
+                Gym      = MapToDto(gym),
+                Coaches  = coaches,
+                Managers = managers,
+                Athletes = athletes
+            });
+        }
+
+        return new MyMembersDto { IsFreelancer = false, Gyms = visibleGyms };
+    }
+
     // ------------------------------------------------------------------
     private async Task<(List<CoachDto> coaches, List<ManagerDto> managers, List<AthleteDto> athletes)>
         FetchMembersAsync(Guid gymId, CancellationToken ct)

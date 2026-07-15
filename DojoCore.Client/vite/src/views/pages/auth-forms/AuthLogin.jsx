@@ -8,12 +8,21 @@ import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
@@ -32,6 +41,13 @@ const loginSchema = Yup.object({
   password: Yup.string().required('Password is required')
 });
 
+const DEMO_ACCOUNTS = [
+  { role: 'Demo Manager', username: 'demo.manager', password: 'Demo@12345' },
+  { role: 'Demo Coach', username: 'demo.coach1', password: 'Demo@12345' },
+  { role: 'Demo Athlete', username: 'demo.athlete', password: 'Demo@12345' },
+  { role: 'Demo Freelance Athlete', username: 'demo.freelancer', password: 'Demo@12345' }
+];
+
 // ===============================|| JWT - LOGIN ||=============================== //
 
 export default function AuthLogin() {
@@ -48,6 +64,7 @@ export default function AuthLogin() {
   const [serverError, setServerError] = useState('');
   const [checked, setChecked] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [demoDialogOpen, setDemoDialogOpen] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -75,6 +92,19 @@ export default function AuthLogin() {
 
     try {
       await login({ identifier: values.identifier, password: values.password });
+      navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setServerError(err.message || t('Login failed. Please try again.', 'Login failed. Please try again.'));
+    }
+  };
+
+  const handleDemoLogin = async (account) => {
+    setServerError('');
+    setDemoDialogOpen(false);
+    setValues({ identifier: account.username, password: account.password });
+
+    try {
+      await login({ identifier: account.username, password: account.password });
       navigate(redirectTo, { replace: true });
     } catch (err) {
       setServerError(err.message || t('Login failed. Please try again.', 'Login failed. Please try again.'));
@@ -157,6 +187,58 @@ export default function AuthLogin() {
           </Button>
         </AnimateButton>
       </Box>
+
+      <Box sx={{ mt: 2 }}>
+        <Button color="secondary" fullWidth size="large" variant="outlined" onClick={() => setDemoDialogOpen(true)}>
+          {t('Try Demo Accounts', 'Try Demo Accounts')}
+        </Button>
+      </Box>
+
+      <Dialog open={demoDialogOpen} onClose={() => setDemoDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>{t('Demo Accounts', 'Demo Accounts')}</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            {t(
+              'Use one of the accounts below to explore DojoCore, or click a row to sign in instantly.',
+              'Use one of the accounts below to explore DojoCore, or click a row to sign in instantly.'
+            )}
+          </Typography>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>{t('Role', 'Role')}</TableCell>
+                <TableCell>{t('Username', 'Username')}</TableCell>
+                <TableCell>{t('Password', 'Password')}</TableCell>
+                <TableCell align="right" />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {DEMO_ACCOUNTS.map((account) => (
+                <TableRow key={account.username} hover sx={{ cursor: 'pointer' }} onClick={() => handleDemoLogin(account)}>
+                  <TableCell>{t(account.role, account.role)}</TableCell>
+                  <TableCell>{account.username}</TableCell>
+                  <TableCell>{account.password}</TableCell>
+                  <TableCell align="right">
+                    <Button
+                      size="small"
+                      color="secondary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDemoLogin(account);
+                      }}
+                    >
+                      {t('Sign In', 'Sign In')}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDemoDialogOpen(false)}>{t('Close', 'Close')}</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

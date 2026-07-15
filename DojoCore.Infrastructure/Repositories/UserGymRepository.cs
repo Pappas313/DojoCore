@@ -26,4 +26,16 @@ public class UserGymRepository : IUserGymRepository
         var cmd = new CommandDefinition(sql, userGym, transaction: _transaction(), cancellationToken: ct);
         await _connection.ExecuteAsync(cmd);
     }
+
+    public async Task<IEnumerable<Guid>> GetGymIdsByUserIdAsync(Guid userId, CancellationToken ct = default)
+    {
+        const string sql = """
+            SELECT gym_id
+            FROM user_gym
+            WHERE user_id = @UserId
+            """;
+
+        var cmd = new CommandDefinition(sql, new { UserId = userId }, transaction: _transaction(), cancellationToken: ct);
+        return await _connection.QueryAsync<Guid>(cmd);
+    }
 }

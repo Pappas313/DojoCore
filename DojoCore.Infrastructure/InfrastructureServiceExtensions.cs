@@ -40,10 +40,12 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IManagerService, ManagerService>();
         services.AddScoped<ICoachService, CoachService>();
         services.AddScoped<IGymService, GymService>();
+        services.AddScoped<IGroupService, GroupService>();
         services.AddScoped<IMapService, MapService>();
         services.AddScoped<ITranslationService, TranslationService>();
         services.AddSingleton<IExcelCompetitionParser, ExcelCompetitionParser>();
         services.AddScoped<ICompetitionService, CompetitionService>();
+        services.AddScoped<IDashboardService, DashboardService>();
 
         return services;
     }

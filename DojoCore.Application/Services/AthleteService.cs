@@ -22,6 +22,33 @@ public class AthleteService : IAthleteService
         return athletes.Select(MapToDto).ToList();
     }
 
+    // Role values (see RegisterOperationFilter): 0 = Admin, 1 = Coach, 2 = Manager, 3 = Athlete
+    private const short AdminRole = 0;
+
+    public async Task<List<AthleteDto>> GetVisibleAsync(Guid callerId, short callerRole, CancellationToken ct = default)
+    {
+        if (callerRole == AdminRole)
+            return await GetAllAsync(ct);
+
+        var gymIds = (await _uow.UserGyms.GetGymIdsByUserIdAsync(callerId, ct)).ToList();
+        if (gymIds.Count == 0)
+            return []; // freelancers (and any user without a gym) don't see other athletes
+
+        var seen = new HashSet<Guid>();
+        var result = new List<AthleteDto>();
+        foreach (var gymId in gymIds)
+        {
+            var athletes = await _uow.Athletes.GetByGymIdAsync(gymId, ct);
+            foreach (var athlete in athletes)
+            {
+                if (seen.Add(athlete.Id))
+                    result.Add(MapToDto(athlete));
+            }
+        }
+
+        return result;
+    }
+
     public async Task<AthleteDto?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         var athlete = await _uow.Athletes.GetByIdAsync(id, ct);

@@ -8,6 +8,7 @@ import AuthGuard from './AuthGuard';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
+const DashboardStats = Loadable(lazy(() => import('views/dashboard/Stats')));
 
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
@@ -66,6 +67,10 @@ const MainRoutes = {
         {
           path: 'default',
           element: <DashboardDefault />
+        },
+        {
+          path: 'stats',
+          element: <DashboardStats />
         }
       ]
     },

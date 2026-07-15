@@ -20,6 +20,11 @@ export async function getGyms() {
   return handleResponse(response);
 }
 
+export async function getMyMembers() {
+  const response = await fetch('/api/gyms/mine/members', { credentials: 'include' });
+  return handleResponse(response);
+}
+
 export async function createGym(payload) {
   const response = await fetch('/api/gyms', {
     method: 'POST',
